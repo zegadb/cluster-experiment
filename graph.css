@@ -1,0 +1,110 @@
+/* Adapted from Zega browser/style.css (Apache-2.0), scoped to reused component. */
+.zega-graph .overview { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; align-items: center; }
+.zega-graph .chip {
+  font-size: 11.5px;
+  padding: 2px 9px;
+  border-radius: 10px;
+  background: #ececf0;
+  border: 1px solid var(--border);
+}
+.zega-graph .chip.rel { background: #f6f6f8; color: #55555e; }
+.zega-graph .overview-label { font-size: 11px; color: var(--dim); margin-right: 2px; }
+
+/* graph view */
+.zega-graph .graph-wrap {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: radial-gradient(circle, #f0f0f3 1px, transparent 1px) 0 0/22px 22px, #fdfdfe;
+  overflow: hidden;
+  position: relative;
+}
+.zega-graph .graph-wrap svg { display: block; width: 100%; height: 480px; cursor: grab; }
+.zega-graph .graph-wrap svg:active { cursor: grabbing; }
+.zega-graph .graph-tip {
+  position: absolute;
+  pointer-events: none;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 6px 9px;
+  font-size: 11.5px;
+  max-width: 260px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  display: none;
+  white-space: pre-wrap;
+}
+/* caption + relationship labels: background halo keeps text readable where
+   edges pass beneath it (paint-order draws the stroke behind the glyphs) */
+.zega-graph .graph-wrap text.cap {
+  paint-order: stroke;
+  stroke: #fdfdfe;
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
+}
+.zega-graph .graph-wrap text.rlab {
+  paint-order: stroke;
+  stroke: #fdfdfe;
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
+}
+.zega-graph .graph-hint {
+  position: absolute;
+  top: 12px;
+  right: 46px;
+  z-index: 2;
+  font-size: 11px;
+  letter-spacing: 0.01em;
+  color: var(--dim);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.zega-graph .graph-gear {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  font-size: 13px;
+  padding: 2px 8px;
+}
+.zega-graph .graph-zoom {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.zega-graph .graph-zoom button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+}
+.zega-graph .graph-physics {
+  position: absolute;
+  top: 38px;
+  right: 8px;
+  z-index: 2;
+  display: none;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  width: 220px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  font-size: 11.5px;
+}
+.zega-graph .graph-physics.open { display: block; }
+.zega-graph .graph-physics .ph-row {
+  display: grid;
+  grid-template-columns: 86px 1fr 34px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+}
+.zega-graph .graph-physics .ph-row span { color: var(--dim); }
+.zega-graph .graph-physics .ph-row b { font-weight: 600; text-align: right; }
+.zega-graph .graph-physics .ph-row input[type=range] { width: 100%; margin: 0; }
+.zega-graph .graph-physics .ph-foot { text-align: right; margin-top: 2px; }

@@ -1,0 +1,13 @@
+{
+  "name": "zega-cluster-experiment",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A deterministic cursor protocol lab with an independent local Zega WASM reference",
+  "license": "Apache-2.0",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node build.cjs",
+    "start": "node serve.cjs",
+    "test": "node build.cjs && node verify-zql.mjs && node tests.cjs && node graph-tests.cjs && node --experimental-vm-modules runtime-tests.mjs && node static-tests.cjs"
+  }
+}

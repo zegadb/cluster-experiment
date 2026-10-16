@@ -1,0 +1,5 @@
+REAL STEP TRACE · chain / Delay results
+Completion reads only control.expected and control.results.
+Step 15 | rootDone promises 2 results | expected=2 | unique=0 | done=false | rootDone promised 2 unique result messages; 0 received, 2 still missing.
+Step 16 | Unique result received: Cleo | expected=2 | unique=1 | done=false | rootDone promised 2 unique result messages; 1 received, 1 still missing.
+Step 17 | Unique result received: Ben · QUERY COMPLETE | expected=2 | unique=2 | done=true | Done: rootDone promised 2 unique result messages and all 2 have arrived. Queue visibility is not used.
