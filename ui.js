@@ -73,9 +73,33 @@
       return '<section class="server-box"><h4>Server '+m.id+'</h4><p>'+m.ready.length+' queued local tasks · '+Object.keys(m.accepted).length+' accepted delivery IDs · '+Object.keys(m.executed).length+' executed operation tokens</p><ul>'+(rows||'<li>No cursor state yet.</li>')+'</ul></section>';
     }).join('');
   }
+  // Twenty cursor lanes plus the separate coordinator receipt rail.
+  const executionCapacity=20,executionAxis=32,executionRow=70;
+  let timelineSizing=null,timelineSizingKey='';
+  function timelineHeightBudget({rowHeight=executionRow,axisHeight=executionAxis,chromeHeight=0,scrollbarHeight=0,layoutEdges=0,panelEdges=0}={}){
+    const laneSpace=axisHeight+rowHeight*(executionCapacity+1);
+    const viewportHeight=Math.ceil(laneSpace+scrollbarHeight+layoutEdges);
+    return {capacity:executionCapacity,rowHeight,axisHeight,laneSpace,scrollbarHeight,viewportHeight,panelHeight:Math.ceil(viewportHeight+chromeHeight+panelEdges)};
+  }
+  function refreshTimelineHeight(){
+    const panel=$('executionPanel'),layout=$('executionLayout'),lanes=$('executionLanes'),pane=$('executionScroll'),lane=lanes.firstElementChild;
+    if(!lane||!panel.children||typeof getComputedStyle!=='function')return;
+    const number=value=>parseFloat(value)||0;
+    const edges=style=>['borderTopWidth','borderBottomWidth','paddingTop','paddingBottom'].reduce((sum,key)=>sum+number(style[key]),0);
+    const chromeHeight=Array.from(panel.children).filter(child=>child!==layout).reduce((sum,child)=>{
+      const style=getComputedStyle(child);return sum+child.getBoundingClientRect().height+number(style.marginTop)+number(style.marginBottom);
+    },0);
+    // SVG rows use CSS pixels too. The maximum avoids fractional zoom rounding clipping a final row.
+    timelineSizing=timelineHeightBudget({rowHeight:Math.max(executionRow,lane.getBoundingClientRect().height),axisHeight:Math.max(executionAxis,number(getComputedStyle(lanes).paddingTop)),chromeHeight,
+      scrollbarHeight:Math.max(0,pane.offsetHeight-pane.clientHeight),layoutEdges:edges(getComputedStyle(layout)),panelEdges:edges(getComputedStyle(panel))});
+    const key=timelineSizing.viewportHeight+'/'+timelineSizing.panelHeight;
+    if(key===timelineSizingKey)return;timelineSizingKey=key;
+    document.documentElement.style.setProperty('--timeline-viewport-height',timelineSizing.viewportHeight+'px');
+    document.documentElement.style.setProperty('--timeline-panel-height',timelineSizing.panelHeight+'px');
+  }
   let lastExecutionTick=null;
   function renderExecutionTimeline(s){
-    const model=CursorTimeline.project(snapshots,s.tick,selectedEventId),pitch=56,axis=32,row=70;
+    const model=CursorTimeline.project(snapshots,s.tick,selectedEventId),pitch=56,axis=executionAxis,row=executionRow;
     const laneIds=['@coordinator',...model.lanes.map(l=>l.id)];
     const ys=Object.fromEntries(laneIds.map((id,i)=>[id,axis+i*row+row/2]));
     const x=tick=>24+tick*pitch,width=Math.max(600,x(model.currentTick)+40),height=axis+laneIds.length*row;
@@ -218,14 +242,15 @@
     $('history').innerHTML=s.history.length?[...s.history].reverse().map(h=>'<li><time>'+String(h.tick).padStart(2,'0')+'</time><span>'+esc(h.title)+'</span></li>').join(''):'<li class="empty">Step through dispatch, emissions, joins and receipts.</li>';
     $('pathSummary').textContent='Unique path results · '+s.received.length+' received · retries deduplicate by message ID; people deduplicate separately';
     $('pathList').innerHTML=s.received.length?s.received.map(r=>'<div class="path-row"><span>'+esc(r.cursor)+' / </span>'+esc(E.names(s.data,r.path))+'<br><span>'+esc(r.resultId)+'</span></div>').join(''):'<p class="empty">No qualifying path result received yet.</p>';
-    protocolPanels(s);graph(s);renderExecutionTimeline(s);refreshResponseConnector();renderReference(s);
+    protocolPanels(s);graph(s);renderExecutionTimeline(s);refreshTimelineHeight();refreshResponseConnector();renderReference(s);
   }
   $('scenario').innerHTML = Object.entries(E.scenarios).map(([id, data]) => '<option value="' + id + '">' + data.name + '</option>').join('');
   $('schedule').innerHTML = Object.entries(E.schedules).map(([id, name]) => '<option value="' + id + '">' + name + '</option>').join('');
   $('tickEvents').addEventListener('click',event=>{const button=event.target.closest?.('[data-tick-event]');if(!button)return;selectedEventId=button.dataset.tickEvent||null;selected=button.dataset.cursor||selected;render();});
   $('executionGraph').addEventListener('click', selectExecutionEvent);
   $('executionGraph').addEventListener('keydown', event => { if(event.key==='Enter'||event.key===' '){ event.preventDefault();selectExecutionEvent(event); } });
-  if(typeof window.addEventListener==='function'){window.addEventListener('resize',refreshResponseConnector);window.addEventListener('cluster-graph-viewchange',refreshResponseConnector);}
+  if(typeof window.addEventListener==='function'){window.addEventListener('resize',()=>{refreshTimelineHeight();refreshResponseConnector();});window.addEventListener('cluster-graph-viewchange',refreshResponseConnector);}
+  $('executionDetailPanel').addEventListener('toggle',()=>{refreshTimelineHeight();refreshResponseConnector();});
   $('runZega').addEventListener('click',runReference);
   $('scenario').addEventListener('change', reset); $('schedule').addEventListener('change', reset);
   $('step').addEventListener('click', () => { stop(); advance(); });
@@ -243,8 +268,9 @@
     $('checkReport').classList.remove('hidden'); $('checkReport').textContent = passed + ' / ' + (Object.keys(E.scenarios).length*Object.keys(E.schedules).length) + ' reference checks passed. Invariants checked after every transition.\n' + lines.join('\n');
   });
   // Read-only diagnostics for local verification; the renderer never mutates engine state.
-  window.CursorLabUI = Object.freeze({ getState: () => JSON.parse(JSON.stringify(state())), getPosition: () => position, getRecordedCount: () => snapshots.length, coordinatorUserResponse, coordinatorResponseJSON, responseChange, connectorGeometry, getReference:()=>JSON.parse(JSON.stringify(reference)),runReference, getExecutionTimeline: () => CursorTimeline.project(snapshots,state().tick,selectedEventId), queryText });
+  window.CursorLabUI = Object.freeze({ getState: () => JSON.parse(JSON.stringify(state())), getPosition: () => position, getRecordedCount: () => snapshots.length, coordinatorUserResponse, coordinatorResponseJSON, responseChange, connectorGeometry, timelineHeightBudget, getTimelineSizing:()=>timelineSizing?{...timelineSizing}:null, getReference:()=>JSON.parse(JSON.stringify(reference)),runReference, getExecutionTimeline: () => CursorTimeline.project(snapshots,state().tick,selectedEventId), queryText });
   if(typeof ResizeObserver==='function'){const connectorObserver=new ResizeObserver(refreshResponseConnector);for(const id of ['mainGrid','coordinatorServer','coordOutbox','userResponsePanel','responseFlow'])connectorObserver.observe($(id));}
+  if(typeof ResizeObserver==='function'){const timelineObserver=new ResizeObserver(()=>{refreshTimelineHeight();refreshResponseConnector();});for(const element of [$('executionLanes'),$('executionScroll'),...Array.from($('executionPanel').children||[]).filter(child=>child!==$('executionLayout'))])timelineObserver.observe(element);}
   reset();
   // Reserve the actual floating-bar height when zoom or wrapping changes it.
   // CSS provides a conservative fallback before the first observation.

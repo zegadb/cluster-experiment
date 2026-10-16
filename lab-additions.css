@@ -45,19 +45,19 @@
 #aggregationProgress{max-height:36px;overflow:auto;flex:none}.response-updated .received-json{box-shadow:0 0 0 2px #e0edcf}.response-connector{display:none}
 .process-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(300px,1fr);gap:12px;margin-top:12px;align-items:start}.live-process-panel{margin:0}.process-row .live-process-panel{min-width:0;height:260px;overflow:auto;scrollbar-gutter:stable}.process-row #currentEventPanel{padding:12px}.process-row .event h3{font-size:16px}.process-row .event p{font-size:11px}
 @media(min-width:1151px){
- .main-grid{--overview-height:clamp(300px,35vh,480px);--response-row-height:clamp(280px,32vh,480px);grid-template-columns:minmax(0,3fr) minmax(280px,1fr);grid-template-areas:"query query" "graph coordinator" "timeline result"}
- #querySection{grid-area:query}.graph-panel{grid-area:graph;height:var(--overview-height)}#coordinatorServer{grid-area:coordinator;height:var(--overview-height)}#executionPanel{grid-area:timeline;height:var(--response-row-height)}#userResponsePanel{grid-area:result;height:var(--response-row-height)}
+ .main-grid{--overview-height:clamp(300px,35vh,480px);grid-template-columns:minmax(0,3fr) minmax(280px,1fr);grid-template-areas:"query query" "graph coordinator" "timeline result"}
+ #querySection{grid-area:query}.graph-panel{grid-area:graph;height:var(--overview-height)}#coordinatorServer{grid-area:coordinator;height:var(--overview-height)}#executionPanel{grid-area:timeline;height:var(--timeline-panel-height)}#userResponsePanel{grid-area:result;height:var(--timeline-panel-height)}
  .graph-views>div{height:100%;display:flex;flex-direction:column}.server-graphs{flex:1;min-height:0}.server-graph{display:flex;flex-direction:column;min-height:0}.zega-graph{display:flex;flex-direction:column;flex:1;min-height:0}.zega-graph .overview{flex:none}.zega-graph .graph-wrap{flex:1;min-height:0}.zega-graph .graph-wrap svg{height:100%}
  .response-connector{display:block}
 }
 @media(max-width:1150px){
  #coordinatorServer{max-height:360px}.coordinator-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.coordinator-grid>div+div{border-top:0;padding-top:0;border-left:1px solid #d2decc;padding-left:10px}
- #executionPanel{height:440px}#userResponsePanel{height:400px}.zega-graph .graph-wrap svg{height:320px}.execution-detail dl{grid-template-columns:80px minmax(0,1fr) 80px minmax(0,1fr)}
+ .zega-graph .graph-wrap svg{height:320px}.execution-detail dl{grid-template-columns:80px minmax(0,1fr) 80px minmax(0,1fr)}
 }
 @media(max-width:700px){
  #querySection .query-banner{grid-template-columns:minmax(0,1fr);gap:8px}.query-context p{font-size:11px}#querySection .card-head .small{font-size:10px}
  .process-row{grid-template-columns:minmax(0,1fr)}.coordinator-grid{grid-template-columns:minmax(0,1fr)}.coordinator-grid>div+div{border-left:0;padding-left:0;border-top:1px solid #d2decc;padding-top:9px}
- #executionPanel{height:420px}#userResponsePanel{height:430px}.execution-detail dl{grid-template-columns:80px minmax(0,1fr)}.execution-legend{gap:3px 8px}.execution-card .card-head{flex-wrap:wrap}.process-row .live-process-panel{height:auto;max-height:360px}
+ .execution-detail dl{grid-template-columns:80px minmax(0,1fr)}.execution-legend{gap:3px 8px}.execution-card .card-head{flex-wrap:wrap}.process-row .live-process-panel{height:auto;max-height:360px}
 }
 
 /* Keep the response itself visible before optional protocol explanations. */
@@ -66,11 +66,18 @@
 
 @media(min-width:1151px){
  #querySection{display:grid;grid-template-columns:140px minmax(0,1fr);align-items:start}#querySection .card-head{display:block;padding:12px}#querySection .card-head .small{display:block;margin-top:5px;font-size:10px;line-height:1.5}#querySection .query-banner{margin:10px 12px 10px 0}
- .main-grid{--overview-height:clamp(380px,35vh,480px);--response-row-height:clamp(240px,28vh,480px)}
- .graph-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 27px;grid-template-areas:"tabs tabs" "views views" "inspection legend"}
+ .main-grid{--overview-height:clamp(380px,35vh,480px);grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 27px;grid-template-areas:"tabs tabs" "views views" "inspection legend"}
  .graph-tabs{grid-area:tabs}.graph-views{grid-area:views}.graph-inspection{grid-area:inspection;min-width:0;white-space:nowrap;max-height:27px;min-height:27px}.graph-note{grid-area:legend;min-width:0;flex-wrap:nowrap;white-space:nowrap;overflow:auto;max-height:27px;border-top:1px solid var(--line);padding-top:5px}.graph-note .legend{flex:none}
  .zega-graph .overview{max-height:22px;flex-wrap:nowrap;overflow:auto}.zega-graph .overview>*{flex:none}
 }
 @media(min-width:1151px){.execution-legend{flex-wrap:nowrap;white-space:nowrap;overflow:auto;min-height:27px;max-height:27px;flex:none}.execution-legend>*{flex:none}}
 /* Horizontal strips remain scrollable without covering their single text line. */
 @media(min-width:1151px){.zega-graph .overview,.graph-inspection,.graph-note,.execution-legend{scrollbar-width:none}.zega-graph .overview::-webkit-scrollbar,.graph-inspection::-webkit-scrollbar,.graph-note::-webkit-scrollbar,.execution-legend::-webkit-scrollbar{display:none}.graph-inspection:focus-visible,.graph-note:focus-visible,.execution-legend:focus-visible{outline:2px solid #548465;outline-offset:-2px}}
+
+/* 20 cursors + 1 coordinator rail. JS adds measured headers, details, borders
+   and the actual horizontal scrollbar; no viewport-height cap may shrink it. */
+:root{--timeline-viewport-height:calc(32px + 21 * 70px + 2px);--timeline-panel-height:calc(var(--timeline-viewport-height) + 220px)}
+#executionPanel,#userResponsePanel{height:var(--timeline-panel-height);min-height:var(--timeline-panel-height);max-height:none}
+#executionPanel>.card-head,#executionPanel>.execution-caption,#executionPanel>.execution-legend{flex-shrink:0}
+#executionPanel .execution-layout{flex:none;height:var(--timeline-viewport-height);min-height:var(--timeline-viewport-height);max-height:none}
+#executionPanel .execution-detail{max-height:360px}
