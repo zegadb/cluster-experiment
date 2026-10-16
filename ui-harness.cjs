@@ -9,7 +9,7 @@ function harness(overrideData){
  for(const x of html.matchAll(/\bid="([^"]+)"/g))elements[x[1]]=make(x[1]);
  elements.scenario.value='chain';elements.schedule.value='fifo';
  const sandbox=vm.createContext({document:{getElementById:id=>{if(!elements[id])throw Error('Missing DOM ID '+id);return elements[id];},documentElement:{style:{setProperty:(k,v)=>styles[k]=v}}},console,
-  window:{},setInterval:fn=>{timerCallback=fn;return 1;},clearInterval:()=>{timerCallback=null;},ResizeObserver:class{constructor(fn){resize=fn;}observe(){resize();}}});
+  window:{listeners:{},addEventListener(k,fn){this.listeners[k]=fn;}},setInterval:fn=>{timerCallback=fn;return 1;},clearInterval:()=>{timerCallback=null;},ResizeObserver:class{constructor(fn){resize=fn;}observe(){resize();}}});
  vm.runInContext(engine,sandbox);
  if(overrideData){const api=sandbox.CursorLab;sandbox.CursorLab=Object.freeze({...api,create:(scenario,schedule)=>api.create('test-fixture',schedule,overrideData)});}
  vm.runInContext(querySource,sandbox);vm.runInContext(timelineSource,sandbox);vm.runInContext(html.match(/<script id="simulation-ui">([\s\S]*?)<\/script>/)[1],sandbox);

@@ -1,5 +1,5 @@
 {
-  "runtime": "Bundled zega-wasm 0.1.2; exact asset hashes in provenance.json",
+  "runtime": "Bundled zega-wasm 0.2.0; exact asset hashes in provenance.json",
   "cases": {
     "chain": {
       "query": "query {\n  Person(name: \"Ava\") {\n    follows *1..2 -> Person(name != \"Ava\") { name }\n  }\n}",
@@ -42,92 +42,20 @@
       }
     },
     "restaurants": {
-      "query": "query {\n  City {\n    name\n    restaurants -> Restaurant { name rating }\n  }\n}",
+      "query": "query {\n  City {\n    name\n    restaurants -> Restaurant order by rating desc, name limit 1 { name rating }\n  }\n}",
       "response": [
         {
           "name": "Alder Bay",
           "restaurants": [
             {
-              "name": "Alder Bay Juniper",
-              "rating": 3.5
-            },
-            {
-              "name": "Alder Bay Lantern",
-              "rating": 4.2
-            },
-            {
-              "name": "Alder Bay Saffron",
-              "rating": 4.9
-            },
-            {
-              "name": "Alder Bay Orchard",
-              "rating": 4.1
-            },
-            {
-              "name": "Alder Bay Ember",
-              "rating": 4.8
-            },
-            {
-              "name": "Alder Bay Willow",
-              "rating": 4
-            },
-            {
-              "name": "Alder Bay Basil",
-              "rating": 4.7
-            },
-            {
-              "name": "Alder Bay Meadow",
-              "rating": 3.9
-            },
-            {
-              "name": "Alder Bay Copper",
-              "rating": 4.6
-            },
-            {
               "name": "Alder Bay Pearl",
-              "rating": 3.8
+              "rating": 4.9
             }
           ]
         },
         {
           "name": "Briar Falls",
           "restaurants": [
-            {
-              "name": "Briar Falls Juniper",
-              "rating": 4.6
-            },
-            {
-              "name": "Briar Falls Lantern",
-              "rating": 3.8
-            },
-            {
-              "name": "Briar Falls Saffron",
-              "rating": 4.5
-            },
-            {
-              "name": "Briar Falls Orchard",
-              "rating": 3.7
-            },
-            {
-              "name": "Briar Falls Ember",
-              "rating": 4.4
-            },
-            {
-              "name": "Briar Falls Willow",
-              "rating": 3.6
-            },
-            {
-              "name": "Briar Falls Basil",
-              "rating": 4.3
-            },
-            {
-              "name": "Briar Falls Meadow",
-              "rating": 3.5
-            },
-            {
-              "name": "Briar Falls Copper",
-              "rating": 4.2
-            },
             {
               "name": "Briar Falls Pearl",
               "rating": 4.9
@@ -138,44 +66,8 @@
           "name": "Cedar Vale",
           "restaurants": [
             {
-              "name": "Cedar Vale Juniper",
-              "rating": 4.2
-            },
-            {
               "name": "Cedar Vale Lantern",
               "rating": 4.9
-            },
-            {
-              "name": "Cedar Vale Saffron",
-              "rating": 4.1
-            },
-            {
-              "name": "Cedar Vale Orchard",
-              "rating": 4.8
-            },
-            {
-              "name": "Cedar Vale Ember",
-              "rating": 4
-            },
-            {
-              "name": "Cedar Vale Willow",
-              "rating": 4.7
-            },
-            {
-              "name": "Cedar Vale Basil",
-              "rating": 3.9
-            },
-            {
-              "name": "Cedar Vale Meadow",
-              "rating": 4.6
-            },
-            {
-              "name": "Cedar Vale Copper",
-              "rating": 3.8
-            },
-            {
-              "name": "Cedar Vale Pearl",
-              "rating": 4.5
             }
           ]
         },
@@ -183,44 +75,8 @@
           "name": "Dawn Harbor",
           "restaurants": [
             {
-              "name": "Dawn Harbor Juniper",
-              "rating": 3.8
-            },
-            {
-              "name": "Dawn Harbor Lantern",
-              "rating": 4.5
-            },
-            {
-              "name": "Dawn Harbor Saffron",
-              "rating": 3.7
-            },
-            {
-              "name": "Dawn Harbor Orchard",
-              "rating": 4.4
-            },
-            {
-              "name": "Dawn Harbor Ember",
-              "rating": 3.6
-            },
-            {
-              "name": "Dawn Harbor Willow",
-              "rating": 4.3
-            },
-            {
-              "name": "Dawn Harbor Basil",
-              "rating": 3.5
-            },
-            {
-              "name": "Dawn Harbor Meadow",
-              "rating": 4.2
-            },
-            {
               "name": "Dawn Harbor Copper",
               "rating": 4.9
-            },
-            {
-              "name": "Dawn Harbor Pearl",
-              "rating": 4.1
             }
           ]
         },
@@ -230,42 +86,6 @@
             {
               "name": "Elm Ridge Juniper",
               "rating": 4.9
-            },
-            {
-              "name": "Elm Ridge Lantern",
-              "rating": 4.1
-            },
-            {
-              "name": "Elm Ridge Saffron",
-              "rating": 4.8
-            },
-            {
-              "name": "Elm Ridge Orchard",
-              "rating": 4
-            },
-            {
-              "name": "Elm Ridge Ember",
-              "rating": 4.7
-            },
-            {
-              "name": "Elm Ridge Willow",
-              "rating": 3.9
-            },
-            {
-              "name": "Elm Ridge Basil",
-              "rating": 4.6
-            },
-            {
-              "name": "Elm Ridge Meadow",
-              "rating": 3.8
-            },
-            {
-              "name": "Elm Ridge Copper",
-              "rating": 4.5
-            },
-            {
-              "name": "Elm Ridge Pearl",
-              "rating": 3.7
             }
           ]
         }

@@ -1,58 +1,68 @@
 {
   "upstream": "https://github.com/zegadb/zega",
   "sourceCheckoutCommit": "5cf1c8df7de715b63bb6d11fd26fc30983369236",
-  "wasmPackageVersion": "0.1.2",
+  "wasmPackageVersion": "0.2.0",
   "binaryBuildCommit": "Not recorded by upstream package; no claim that binary was built from sourceCheckoutCommit.",
-  "wasmModification": "47 embedded personal build-path prefixes replaced with equal-length /build/zega/ prefix; no executable instructions intentionally changed.",
+  "wasmModification": "0 embedded personal build-path prefixes replaced with equal-length generic /build/ prefixes; no executable instructions intentionally changed.",
   "assets": [
     {
       "file": "vendor/zega_wasm.mjs",
       "upstreamPath": "browser/pkg/zega_wasm.js",
       "modified": false,
-      "upstreamSha256": "06bd13e7d74c9e463015c3e8a0c9647f2d3ad2b306454d84ef84c5bfdaa9b3ef",
-      "sha256": "06bd13e7d74c9e463015c3e8a0c9647f2d3ad2b306454d84ef84c5bfdaa9b3ef"
+      "upstreamSha256": "aebc25e2bbe117ed736fb58197244e94b2cb4dbf21a15e81809239d944c1777a",
+      "sha256": "aebc25e2bbe117ed736fb58197244e94b2cb4dbf21a15e81809239d944c1777a",
+      "upstreamCommit": "4ecaf43064c7320cd9d587fc68f21919e50ebc1d"
     },
     {
       "file": "vendor/zega_wasm_bg.wasm",
       "upstreamPath": "browser/pkg/zega_wasm_bg.wasm",
-      "modified": true,
-      "upstreamSha256": "c11512155a381adc1021e62880e11a61656347f7f4eddcff3f68908751e194a1",
-      "sha256": "c7f37d76f224bb6092dc94ad40e00f3d5ef0536d1986c890f6c93f7c3790f729"
+      "modified": false,
+      "upstreamSha256": "82b0d00b45552bf51ec4588faab598f5d77b9a4c274bfef589857fd97f3a6715",
+      "sha256": "82b0d00b45552bf51ec4588faab598f5d77b9a4c274bfef589857fd97f3a6715",
+      "upstreamCommit": "4ecaf43064c7320cd9d587fc68f21919e50ebc1d"
     },
     {
       "file": "zega-graph.mjs",
       "upstreamPath": "browser/graph.js",
       "modified": true,
       "upstreamSha256": "913e1d6eae34a272c737003f210a7ed8f44aa077307aec43300d4b63a0528dbe",
-      "sha256": "da415ee087a06fd871caed093d6386e594be5d098020d4dffa574e68fa453920"
+      "sha256": "4350bb4d2716095447df9c9a3357bd90527327542cb80a484d7ee00cae22a097",
+      "upstreamCommit": "5cf1c8df7de715b63bb6d11fd26fc30983369236"
     },
     {
       "file": "vendor/d3-force.js",
       "upstreamPath": "browser/vendor/d3-force.js",
       "modified": false,
       "upstreamSha256": "105aef219e37ee375cb9fa2a5c9567fb353dac3ed994f004b299d5ab391f6754",
-      "sha256": "105aef219e37ee375cb9fa2a5c9567fb353dac3ed994f004b299d5ab391f6754"
+      "sha256": "105aef219e37ee375cb9fa2a5c9567fb353dac3ed994f004b299d5ab391f6754",
+      "upstreamCommit": "5cf1c8df7de715b63bb6d11fd26fc30983369236"
     },
     {
       "file": "vendor/d3-quadtree.js",
       "upstreamPath": "browser/vendor/d3-quadtree.js",
       "modified": false,
       "upstreamSha256": "0aafaeff16bd344880f9be177ffc6ed89d4182e303c96450e9ead76b7839fd9c",
-      "sha256": "0aafaeff16bd344880f9be177ffc6ed89d4182e303c96450e9ead76b7839fd9c"
+      "sha256": "0aafaeff16bd344880f9be177ffc6ed89d4182e303c96450e9ead76b7839fd9c",
+      "upstreamCommit": "5cf1c8df7de715b63bb6d11fd26fc30983369236"
     },
     {
       "file": "vendor/d3-dispatch.js",
       "upstreamPath": "browser/vendor/d3-dispatch.js",
       "modified": false,
       "upstreamSha256": "174f345a6adb280d648aba2482066f536511f4e8e33370fcbcd5f0d3c903b003",
-      "sha256": "174f345a6adb280d648aba2482066f536511f4e8e33370fcbcd5f0d3c903b003"
+      "sha256": "174f345a6adb280d648aba2482066f536511f4e8e33370fcbcd5f0d3c903b003",
+      "upstreamCommit": "5cf1c8df7de715b63bb6d11fd26fc30983369236"
     },
     {
       "file": "vendor/d3-timer.js",
       "upstreamPath": "browser/vendor/d3-timer.js",
       "modified": false,
       "upstreamSha256": "4d1891b67af282ad0ff2e1036a059fa367470ccc5193d783d990b007b206055d",
-      "sha256": "4d1891b67af282ad0ff2e1036a059fa367470ccc5193d783d990b007b206055d"
+      "sha256": "4d1891b67af282ad0ff2e1036a059fa367470ccc5193d783d990b007b206055d",
+      "upstreamCommit": "5cf1c8df7de715b63bb6d11fd26fc30983369236"
     }
-  ]
+  ],
+  "referenceSourceCheckoutCommit": "4ecaf43064c7320cd9d587fc68f21919e50ebc1d",
+  "sourceCheckoutCommitNote": "Legacy canvas/D3 source only; WASM upgraded independently to referenceSourceCheckoutCommit.",
+  "binaryArtifactLastChangeCommit": "61217bb8e81e3709e5980e88d38add1033e014d1"
 }

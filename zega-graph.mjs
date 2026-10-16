@@ -1,4 +1,4 @@
-// Modified for cluster-experiment: isolated SVG IDs, boundary ownership, accessible fit/zoom, reduced motion and corrected pan scaling.
+// Modified for cluster-experiment: isolated SVG IDs, boundary ownership, accessible fit/zoom, reduced motion, container-based viewport resizing and corrected pan scaling.
 // Derived from Zega browser/graph.js (Apache-2.0); see THIRD_PARTY_NOTICES.md.
 import { forceSimulation, forceManyBody, forceLink, forceCenter, forceCollide, forceX, forceY } from './vendor/d3-force.js';
 
@@ -56,6 +56,8 @@ function startSimulation(nodes, links, onTick, phys) {
 }
 
 export function stopSim(container) {
+  container._resizeObserver?.disconnect();container._resizeObserver=null;
+  if(container._resizeCleanup){container._resizeCleanup();container._resizeCleanup=null;}
   if (container._sim) {
     container._sim.stop();
     container._sim = null;
@@ -107,6 +109,7 @@ export function renderGraph(container, graph, activeArg = new Set(), actions = n
   const signature = graphSignature(graph);
   if (container._graph && container._graph.signature === signature) {
     container._graph.setActive(activeArg);
+    container._graph.resize();
     return;
   }
   const previous = container._graph?.capture();
@@ -136,6 +139,7 @@ export function renderGraph(container, graph, activeArg = new Set(), actions = n
   const vp = wrap.querySelector('.viewport');
   const tip = wrap.querySelector('.graph-tip');
   const NS = 'http://www.w3.org/2000/svg';
+  let viewWidth=800,viewHeight=480;
   const state = { scale: 1, tx: 0, ty: 0, fitted: false };
   const apply = () => vp.setAttribute('transform', `translate(${state.tx},${state.ty}) scale(${state.scale})`);
   const lit = (node) => active != null && (active.size === 0 || active.has(node.labId) || active.has(nodeCaption(node)));
@@ -148,9 +152,9 @@ export function renderGraph(container, graph, activeArg = new Set(), actions = n
     const minX = Math.min(...xs) - 70, maxX = Math.max(...xs) + 70;
     const minY = Math.min(...ys) - 70, maxY = Math.max(...ys) + 70;
     const w = maxX - minX || 1, h = maxY - minY || 1;
-    state.scale = Math.min(800 / w, 480 / h, 1.4);
-    state.tx = (800 - w * state.scale) / 2 - minX * state.scale;
-    state.ty = (480 - h * state.scale) / 2 - minY * state.scale;
+    state.scale = Math.min(viewWidth / w, viewHeight / h, 1.4);
+    state.tx = (viewWidth - w * state.scale) / 2 - minX * state.scale;
+    state.ty = (viewHeight - h * state.scale) / 2 - minY * state.scale;
     state.fitted = true;
     apply();
   }
@@ -429,6 +433,15 @@ export function renderGraph(container, graph, activeArg = new Set(), actions = n
   };
 
   let userInteracted = false;
+  function resize(){
+    const measured=canvasSize(svg.getBoundingClientRect(),{width:viewWidth,height:viewHeight});
+    const changed=measured.width!==viewWidth||measured.height!==viewHeight;
+    if(changed){state.tx+=(measured.width-viewWidth)/2;state.ty+=(measured.height-viewHeight)/2;}
+    viewWidth=measured.width;viewHeight=measured.height;
+    svg.setAttribute('viewBox','0 0 '+viewWidth+' '+viewHeight);
+    if(changed&&!userInteracted)fit();else apply();
+  }
+
   sim.on('end', () => { if (!userInteracted) fit(); });
 
   let drag = null;
@@ -469,8 +482,8 @@ export function renderGraph(container, graph, activeArg = new Set(), actions = n
     if (!drag) return;
     if (drag.pan) {
       userInteracted = true;
-      state.tx = drag.otx + (event.clientX - drag.sx)*800/svg.getBoundingClientRect().width;
-      state.ty = drag.oty + (event.clientY - drag.sy)*480/svg.getBoundingClientRect().height;
+      state.tx = drag.otx + (event.clientX - drag.sx)*viewWidth/svg.getBoundingClientRect().width;
+      state.ty = drag.oty + (event.clientY - drag.sy)*viewHeight/svg.getBoundingClientRect().height;
       apply();
     } else {
       const point = toSvg(event);
@@ -498,8 +511,8 @@ export function renderGraph(container, graph, activeArg = new Set(), actions = n
 
   function toSvg(event) {
     const rect = svg.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 800;
-    const y = ((event.clientY - rect.top) / rect.height) * 480;
+    const x = ((event.clientX - rect.left) / rect.width) * viewWidth;
+    const y = ((event.clientY - rect.top) / rect.height) * viewHeight;
     return { x: (x - state.tx) / state.scale, y: (y - state.ty) / state.scale };
   }
 
@@ -509,8 +522,14 @@ export function renderGraph(container, graph, activeArg = new Set(), actions = n
   }
   if(!reducedMotion())container._float = requestAnimationFrame(float);
 
+  if(typeof ResizeObserver==='function'){
+    container._resizeObserver=new ResizeObserver(resize);container._resizeObserver.observe(svg);
+  }else if(typeof window!=='undefined'&&typeof window.addEventListener==='function'){
+    window.addEventListener('resize',resize);container._resizeCleanup=()=>window.removeEventListener('resize',resize);
+  }
+  resize();
   container._graph = {
-    signature,
+    signature,resize,
     setActive(next) {
       active = next;
       paint();
@@ -520,8 +539,13 @@ export function renderGraph(container, graph, activeArg = new Set(), actions = n
         positions: new Map(graph.nodes.map((node) => [node.id, {
           x: node.x, y: node.y, fx: node.fx, fy: node.fy,
         }])),
-        view: { scale: state.scale, tx: state.tx, ty: state.ty },
+        view: { scale: state.scale, tx: state.tx, ty: state.ty, width:viewWidth, height:viewHeight },
       };
     },
   };
+}
+
+// Hidden tabs keep their last dimensions; visible canvases use actual CSS pixel dimensions.
+export function canvasSize(rect,current={width:800,height:480}){
+  return {width:Number.isFinite(rect.width)&&rect.width>0?rect.width:current.width,height:Number.isFinite(rect.height)&&rect.height>0?rect.height:current.height};
 }

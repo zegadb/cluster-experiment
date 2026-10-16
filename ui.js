@@ -141,6 +141,8 @@
     const previous=position>0?snapshots[position-1].control:{results:{}};
     const change=responseChange(s.data,previous,s.control);
     $('results').textContent=coordinatorResponseJSON(s.data,s.control);
+    $('aggregationProgress').hidden=s.data.queryKind!=='restaurants';
+    if(s.data.queryKind==='restaurants'){const groups=CursorQueries.restaurantGroups(s.data,s.control);$('aggregationProgress').textContent=groups.filter(g=>g.ready).length+' / 5 cities ranked · '+groups.map(g=>g.name+': '+g.received+'/'+g.expected+(g.ready?' FINAL':' waiting; no winner yet')).join(' · ');}
     $('userResponseState').textContent=s.complete?'Final ZQL response':'Partial ZQL response · assembled from received results';
     $('userResponsePanel').classList.toggle('response-updated',change.changed);
     $('responseConnector').classList.toggle('is-active',change.changed);
@@ -148,17 +150,26 @@
     $('responseChangeDetail').textContent=change.changed?(change.added.length?'+ Added '+change.added.map(entry=>JSON.stringify(entry)).join(', '):'↕ Existing response entries changed or reordered.'):
       s.tick===0?'Awaiting result receipts.':s.event.type==='duplicate'?'Protocol retry ignored; user response unchanged.':s.event.type==='result'?'A receipt arrived without changing the selected response; user response unchanged.':s.complete?'Query complete; return data unchanged on this step.':'Protocol step only; no user-response update.';
   }
+  function connectorGeometry(grid,source,outbox,target,flow){
+    const values=[grid.left,grid.top,grid.width,grid.height,source.right,source.top,source.height,outbox.top,outbox.height,target.left,flow.top,flow.height];
+    if(values.some(value=>!Number.isFinite(value))||source.right+12>=target.left||grid.width<=0||grid.height<=0)return null;
+    const x1=source.right-grid.left+2,x2=target.left-grid.left-3;
+    const y1=Math.max(source.top+8,Math.min(source.top+source.height-8,outbox.top+outbox.height/2))-grid.top;
+    const y2=flow.top+flow.height/2-grid.top,lane=(x1+x2)/2;
+    const delta=y2-y1,direction=Math.sign(delta),radius=Math.min(6,(x2-x1)/4,Math.abs(delta)/2);
+    const path=Math.abs(delta)<1?'M '+x1+' '+y1+' H '+x2:
+      'M '+x1+' '+y1+' H '+(lane-radius)+' Q '+lane+' '+y1+' '+lane+' '+(y1+direction*radius)+' V '+(y2-direction*radius)+' Q '+lane+' '+y2+' '+(lane+radius)+' '+y2+' H '+x2;
+    return {path,x1,y1,x2,y2,lane,width:grid.width,height:grid.height};
+  }
   function refreshResponseConnector(){
-    const grid=$('mainGrid').getBoundingClientRect(),source=$('coordinatorServer').getBoundingClientRect(),target=$('userResponsePanel').getBoundingClientRect();
-    const values=[grid.left,grid.top,grid.width,grid.height,source.right,source.top,target.left,target.top];
-    if(values.some(value=>!Number.isFinite(value))||source.right>=target.left||grid.width<=0||grid.height<=0){$('responseConnector').innerHTML='';return;}
-    const x1=source.right-grid.left,y1=source.top-grid.top+28,x2=target.left-grid.left,y2=target.top-grid.top+25,middle=(x1+x2)/2;
-    $('responseConnector').innerHTML='<svg viewBox="0 0 '+grid.width+' '+grid.height+'" preserveAspectRatio="none"><defs><marker id="return-data-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#587c56"/></marker></defs><path class="response-wire" d="M '+x1+' '+y1+' C '+middle+' '+y1+' '+middle+' '+y2+' '+x2+' '+y2+'" fill="none" marker-end="url(#return-data-arrow)"/></svg>';
+    const route=connectorGeometry($('mainGrid').getBoundingClientRect(),$('coordinatorServer').getBoundingClientRect(),$('coordResultLabel').getBoundingClientRect(),$('userResponsePanel').getBoundingClientRect(),$('responseFlow').getBoundingClientRect());
+    if(!route){$('responseConnector').innerHTML='';return;}
+    $('responseConnector').innerHTML='<svg viewBox="0 0 '+route.width+' '+route.height+'" preserveAspectRatio="none"><defs><marker id="return-data-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 7 7" refX="6" refY="3.5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L5.5 3.5 L1 6" fill="none" stroke="#587c56" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><circle cx="'+route.x1+'" cy="'+route.y1+'" r="2" fill="#587c56"/><path class="response-wire" data-response-route="gutter-to-update-banner" d="'+route.path+'" fill="none" marker-end="url(#return-data-arrow)"/></svg>';
   }
   function render() {
     const s=state(),e=s.event,coord=E.coordinator(s),comparison=E.comparison(s);
     E.assertState(s);
-    $('query').textContent=s.data.queryKind==='movies'?'Which fictional movies connect to Robert Downey Jr.?':s.data.queryKind==='restaurants'?'Gather ten restaurant candidates for each of five cities.': 'Who can '+label(s,s.data.start)+' reach within '+s.data.maxHops+' follows hops?';
+    $('query').textContent=s.data.queryKind==='movies'?'Which fictional movies connect to Robert Downey Jr.?':s.data.queryKind==='restaurants'?'Which restaurant has the highest rating in each of five cities?': 'Who can '+label(s,s.data.start)+' reach within '+s.data.maxHops+' follows hops?';
     $('semantics').textContent=s.data.queryKind?'Fixed query plan · owner-local selected fields · counted child completion':'Bounded walks · repeats allowed · exclude start · distinct output / unique path-message IDs';
     $('scenarioDescription').textContent=s.data.description;$('hopBound').textContent=s.data.maxHops;
     $('stepLabel').textContent='STEP '+String(s.tick).padStart(2,'0')+(s.quiescent?' · ALL TRAFFIC DRAINED':s.complete?' · QUERY DONE / RETRIES REMAIN':' · '+s.schedule.toUpperCase());
@@ -178,8 +189,8 @@
     $('coordStatus').textContent=s.complete?'✓ QUERY COMPLETE':coord.phase.toUpperCase();
     const startingPerson=label(s,s.data.start);
     $('coordQuery').textContent=queryText(s.data);
-    $('coordQuerySemantics').textContent=s.data.queryKind==='movies'?'Return title and year of movies linked from this actor; no unconnected movies.':s.data.queryKind==='restaurants'?'Scan cities, then collect selected fields from every linked restaurant.': 'From '+startingPerson+', follow outgoing follows edges for 1–'+s.data.maxHops+' hops. Return each reachable person once; exclude '+startingPerson+'.';
-    $('coordQueryGap').textContent=s.data.queryKind==='restaurants'?'This WASM supports distance ordering only; rating order / top per city is not native ZQL. This query returns all candidates.':s.data.queryKind==='movies'?'Ten movie nodes are synthetic. Both executions use the same immutable fixture and exact displayed query.':'The lab additionally records every bounded walk; ZQL range traversal does not return those path records. Node identity is distinct from projected name.';
+    $('coordQuerySemantics').textContent=s.data.queryKind==='movies'?'Return title and year of movies linked from this actor; no unconnected movies.':s.data.queryKind==='restaurants'?'For each city, gather all ten restaurant candidates, sort by rating descending then name, and return the first restaurant.': 'From '+startingPerson+', follow outgoing follows edges for 1–'+s.data.maxHops+' hops. Return each reachable person once; exclude '+startingPerson+'.';
+    $('coordQueryGap').textContent=s.data.queryKind==='restaurants'?'Native ZQL order by rating desc, name limit 1. The simulation publishes a city’s winner only after its header and all ten unique candidates arrive; exact ties retain creation order.':s.data.queryKind==='movies'?'Ten movie nodes are synthetic. Both executions use the same immutable fixture and exact displayed query.':'The lab additionally records every bounded walk; ZQL range traversal does not return those path records. Node identity is distinct from projected name.';
     $('coordDispatch').textContent='c1 → Server '+coord.dispatch.to+' · sent once';
     $('coordInboxSummary').textContent=coord.receivedResults+' / '+(coord.expected===null?'?':coord.expected)+' unique results';
     $('coordInbox').innerHTML='<li>'+coord.deliveries+' total incoming deliveries</li><li>'+coord.duplicateResults+' result retries + '+coord.duplicateRoots+' root retries ignored</li>';
@@ -213,7 +224,7 @@
   $('schedule').innerHTML = Object.entries(E.schedules).map(([id, name]) => '<option value="' + id + '">' + name + '</option>').join('');
   $('executionGraph').addEventListener('click', selectExecutionEvent);
   $('executionGraph').addEventListener('keydown', event => { if(event.key==='Enter'||event.key===' '){ event.preventDefault();selectExecutionEvent(event); } });
-  if(typeof window.addEventListener==='function')window.addEventListener('resize',refreshResponseConnector);
+  if(typeof window.addEventListener==='function'){window.addEventListener('resize',refreshResponseConnector);window.addEventListener('cluster-graph-viewchange',refreshResponseConnector);}
   $('runZega').addEventListener('click',runReference);
   $('scenario').addEventListener('change', reset); $('schedule').addEventListener('change', reset);
   $('step').addEventListener('click', () => { stop(); advance(); });
@@ -231,7 +242,8 @@
     $('checkReport').classList.remove('hidden'); $('checkReport').textContent = passed + ' / ' + (Object.keys(E.scenarios).length*Object.keys(E.schedules).length) + ' reference checks passed. Invariants checked after every transition.\n' + lines.join('\n');
   });
   // Read-only diagnostics for local verification; the renderer never mutates engine state.
-  window.CursorLabUI = Object.freeze({ getState: () => JSON.parse(JSON.stringify(state())), getPosition: () => position, getRecordedCount: () => snapshots.length, coordinatorUserResponse, coordinatorResponseJSON, responseChange, getReference:()=>JSON.parse(JSON.stringify(reference)),runReference, getExecutionTimeline: () => CursorTimeline.project(snapshots,state().tick), queryText });
+  window.CursorLabUI = Object.freeze({ getState: () => JSON.parse(JSON.stringify(state())), getPosition: () => position, getRecordedCount: () => snapshots.length, coordinatorUserResponse, coordinatorResponseJSON, responseChange, connectorGeometry, getReference:()=>JSON.parse(JSON.stringify(reference)),runReference, getExecutionTimeline: () => CursorTimeline.project(snapshots,state().tick), queryText });
+  if(typeof ResizeObserver==='function'){const connectorObserver=new ResizeObserver(refreshResponseConnector);for(const id of ['mainGrid','coordinatorServer','coordResultLabel','userResponsePanel','responseFlow'])connectorObserver.observe($(id));}
   reset();
   // Reserve the actual floating-bar height when zoom or wrapping changes it.
   // CSS provides a conservative fallback before the first observation.

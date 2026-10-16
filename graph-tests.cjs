@@ -16,6 +16,18 @@ for(const [name,data]of Object.entries(E.scenarios)){
  assert.equal(ownTotal,data.nodes.length);all.nodes[0].name='render-only change';assert.equal(JSON.stringify(data),before);
  console.log('PASS Canvas data / '+name+' · complete graph, disjoint ownership, explicit remote references, immutable fixture.');
 }
+const size=ctx.window.CursorZegaGraph.canvasSize;
+for(const width of [280,420,780,1440,2560])for(const height of [320,480,700]){const measured=size({width,height});assert.equal(measured.width,width);assert.equal(measured.height,height);}
+assert.equal(size({width:0,height:0},{width:1440,height:480}).width,1440);
+assert.equal(size({width:920,height:520},{width:1440,height:480}).width,920);
+assert.equal(size({width:NaN,height:0},{width:920,height:520}).height,520);
+assert(!html.includes('.shell{max-width:1512px'));assert(html.includes('.shell{width:100%;max-width:none;'));
+assert(html.includes('grid-template-columns:repeat(3,minmax(0,1fr))'));assert(html.includes('@media(max-width:1050px){.server-graphs{grid-template-columns:1fr}'));
+const canvasSource=fs.readFileSync(__dirname+'/zega-graph.mjs','utf8');
+assert(canvasSource.includes('new ResizeObserver(resize)'));assert(canvasSource.includes('container._graph.resize()'));
+assert(canvasSource.includes("svg.setAttribute('viewBox','0 0 '+viewWidth+' '+viewHeight)"));
+assert(canvasSource.includes(' / rect.width) * viewWidth'));assert(canvasSource.includes(' / rect.height) * viewHeight'));
+console.log('PASS Layout sizing · full-width shell, 15 size combinations, hidden-tab retention, resize observation, current-size pointer coordinates and mobile stacking.');
 const {harness}=require('./ui-harness.cjs');const h=harness();
 let calls=0;h.sandbox.window.CursorZegaGraph={stopSim(){},renderGraph(){calls++;}};
 vm.runInContext(fs.readFileSync(__dirname+'/graph-adapter.js','utf8'),h.sandbox);

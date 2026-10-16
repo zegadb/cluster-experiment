@@ -37,6 +37,7 @@ function setTab(next){
  $('tabOne').setAttribute('aria-selected',String(next==='one'));$('tabThree').setAttribute('aria-selected',String(next==='three'));
  $('tabOne').setAttribute('tabindex',next==='one'?'0':'-1');$('tabThree').setAttribute('tabindex',next==='three'?'0':'-1');
  if(snapshot)render(snapshot,selection);
+ if(typeof root.dispatchEvent==='function')root.dispatchEvent(new Event('cluster-graph-viewchange'));
 }
 root.ClusterGraph=Object.freeze({render,dataset,setTab,getTab:()=>tab});
 if(typeof document!=='undefined'){
