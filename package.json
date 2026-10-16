@@ -10,6 +10,6 @@
   "scripts": {
     "build": "node build.cjs",
     "start": "node serve.cjs",
-    "test": "node build.cjs && node verify-zql.mjs && node sort-regressions.mjs && node tests.cjs && node graph-tests.cjs && node ui-layout-tests.cjs && node --experimental-vm-modules runtime-tests.mjs && node static-tests.cjs"
+    "test": "node build.cjs && node verify-zql.mjs && node sort-regressions.mjs && node tests.cjs && node graph-tests.cjs && node ui-layout-tests.cjs && node ui-simplification-tests.cjs && node --experimental-vm-modules runtime-tests.mjs && node static-tests.cjs"
   }
 }

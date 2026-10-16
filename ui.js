@@ -169,9 +169,6 @@
   function render() {
     const s=state(),e=s.event,coord=E.coordinator(s),comparison=E.comparison(s);
     E.assertState(s);
-    $('query').textContent=s.data.queryKind==='movies'?'Which fictional movies connect to Robert Downey Jr.?':s.data.queryKind==='restaurants'?'Which restaurant has the highest rating in each of five cities?': 'Who can '+label(s,s.data.start)+' reach within '+s.data.maxHops+' follows hops?';
-    $('semantics').textContent=s.data.queryKind?'Fixed query plan · owner-local selected fields · counted child completion':'Bounded walks · repeats allowed · exclude start · distinct output / unique path-message IDs';
-    $('scenarioDescription').textContent=s.data.description;$('hopBound').textContent=s.data.maxHops;
     $('stepLabel').textContent='STEP '+String(s.tick).padStart(2,'0')+(s.quiescent?' · ALL TRAFFIC DRAINED':s.complete?' · QUERY DONE / RETRIES REMAIN':' · '+s.schedule.toUpperCase());
     $('back').disabled=position===0;
     $('step').disabled=s.quiescent&&position===snapshots.length-1;

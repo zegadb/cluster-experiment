@@ -13,7 +13,7 @@ npm start
 
 Open the printed loopback URL. `npm start` is only an optional development file server. No npm dependencies or install step are required.
 
-Choose a scenario in the floating bottom bar. Step, Play/Pause, Back and Reset share recorded immutable snapshots. Timeline markers and the slider inspect recorded states. Scenario or scheduling changes reset execution and invalidate the previous WASM result. Tab changes preserve execution. The page uses the full available viewport with modest gutters. Each canvas measures its container and observes size changes, including tab switches; mobile layouts stack the server views.
+The page starts directly with THE QUERY and its actual ZQL. Choose SCENARIO and NETWORK DELIVERY beside each other in the floating bottom bar. Step, Play/Pause, Back and Reset share recorded immutable snapshots. Timeline markers and the slider inspect recorded states. Scenario or scheduling changes reset execution and invalidate the previous WASM result. Tab changes preserve execution. The page uses the full available viewport with modest gutters. Each canvas measures its container and observes size changes, including tab switches; mobile layouts stack the server views.
 
 - **1 server** shows every canonical data node using the existing Zega canvas component. This is the complete input to the real WASM reference.
 - **3 servers** shows three independent instances of that same component. Solid nodes are owned data. Dashed nodes prefixed with ↗ are explicitly labeled remote references and are not locally owned. Every physical data node is present in its owner's view; force layout and fit bounds grow to include all displayed nodes.
