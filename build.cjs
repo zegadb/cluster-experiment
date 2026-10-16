@@ -18,7 +18,7 @@ graph+='window.CursorZegaGraph='+bundleModule(read('zega-graph.mjs'),{'./vendor/
 const wasm=fs.readFileSync(path.join(dir,'vendor/zega_wasm_bg.wasm')).toString('base64');
 const runtime=read('vendor/zega_wasm.mjs')+'\ntry { const bytes=Uint8Array.from(atob("'+wasm+'"),c=>c.charCodeAt(0)); initSync({module:bytes}); window.__resolveZega({ZegaWasm}); } catch(error) { window.__rejectZega(error); }\n';
 let html=read('index.html');
-const sections={'simulation-engine':read('engine.js'),'execution-timeline':read('timeline.js'),'query-plans':read('queries.js'),'graph-canvas':graph,'simulation-ui':read('ui.js'),'zega-runtime':runtime};
+const sections={'simulation-engine':read('engine.js'),'cursor-ticks':read('tick-engine.js'),'tick-timeline':read('tick-timeline.js'),'execution-timeline':read('timeline.js'),'query-plans':read('queries.js'),'graph-canvas':graph,'simulation-ui':read('ui.js'),'zega-runtime':runtime};
 for(const [id,code]of Object.entries(sections)){
  if(/<\/script/i.test(code))throw Error('Unexpected closing script tag in '+id);
  const pattern=new RegExp('(<script id="'+id+'"[^>]*>)[\\s\\S]*?(<\\/script>)');

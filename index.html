@@ -138,6 +138,8 @@
 
 .card-head h1{font-size:14px;line-height:1.5;letter-spacing:0;margin:0;font-weight:650}.floating-selectors{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:9px;flex:0 1 425px;width:425px;max-width:100%;min-width:0}.floating-field{min-width:0;text-align:left}.floating-field label{display:block;font-size:10px;letter-spacing:.7px;font-weight:650;color:#60745c;margin-bottom:3px;white-space:normal}.floating-field select{display:block;width:100%;min-width:0;min-height:44px;padding:7px 25px 7px 9px}@media(max-width:620px){.floating-selectors{flex:1 1 100%;width:100%;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 
+.live-process-panel{margin:14px 16px;padding:12px;border:1px solid #c8d8c0;border-radius:8px;background:#f7faf2}.live-process-panel h3{font-size:13px;margin:0 0 6px}.live-process-panel p{font-size:11px;line-height:1.6;color:#62755c}.live-processes{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:7px;max-height:240px;overflow:auto;margin-top:10px}.live-process{display:grid;gap:3px;border:1px solid #d7e1cf;border-left:3px solid var(--server);border-radius:5px;background:white;padding:8px;font:11px/1.5 var(--mono);overflow-wrap:anywhere}.live-process strong{font-size:11px}.live-process.terminated{opacity:.55}.join-records{margin-top:10px;font:11px/1.7 var(--mono);color:#795894}.tick-events{margin:10px 0 0;padding-left:18px}.tick-events li{margin:5px 0}.tick-events button{min-height:32px;padding:5px 8px;text-align:left;white-space:normal;font:11px/1.5 var(--mono);overflow-wrap:anywhere;width:100%;font-weight:400}
+
 </style>
 </head>
 <body>
@@ -145,15 +147,15 @@
 <main>
 <div id="fatal" class="hidden" role="alert"></div>
 <div class="main-grid" id="mainGrid">
-<section class="card" id="querySection" aria-labelledby="queryHeading"><div class="card-head"><h1 id="queryHeading">THE QUERY</h1><span class="small">Directed graph · shared canonical fixture</span></div><section class="query-banner" aria-labelledby="coordQuery"><div class="eyebrow">Actual ZQL query</div><pre class="zql-query"><code id="coordQuery"></code></pre><p id="coordQuerySemantics"></p><p id="coordQueryGap" class="query-gap"></p></section><div class="graph-scroll"><div class="topology"><section id="coordinatorServer" class="coordinator-server" aria-label="Coordinator server"><div class="coordinator-head"><h4>Coordinator server</h4><span id="coordStatus" class="coord-status"></span></div><div class="coordinator-grid"><div><div class="eyebrow">Initial dispatch</div><strong id="coordDispatch"></strong><small>One startup cursor; data servers take it from there.</small></div><div><div class="eyebrow">Unique result receipts</div><strong id="coordInboxSummary"></strong><ul id="coordInbox" class="coordinator-inbox"></ul></div><div><div class="eyebrow">Completion condition</div><strong id="coordWork"></strong><small id="coordBranches"></small><small id="coordRoot"></small></div></div><p id="coordWhy" class="coord-why" role="status"></p><div class="coordinator-result"><strong id="coordResultLabel"></strong><div id="coordResults" class="chips"></div><span id="coordResultCount" class="small"></span></div><p class="coordinator-note">rootDone carries the subtree result-message total. Completion uses only that expected count and unique received result IDs. No global queue or server-state visibility.</p></section><div class="graph-tabs" role="tablist" aria-label="Graph view"><button id="tabOne" role="tab" tabindex="-1" aria-selected="false" aria-controls="oneServer">1 server</button><button id="tabThree" role="tab" tabindex="0" aria-selected="true" aria-controls="threeServers">3 servers</button></div>
+<section class="card" id="querySection" aria-labelledby="queryHeading"><div class="card-head"><h1 id="queryHeading">THE QUERY</h1><span class="small">Directed graph · shared canonical fixture</span></div><section class="query-banner" aria-labelledby="coordQuery"><div class="eyebrow">Actual ZQL query</div><pre class="zql-query"><code id="coordQuery"></code></pre><p id="coordQuerySemantics"></p><p id="coordQueryGap" class="query-gap"></p></section><div class="graph-scroll"><div class="topology"><section id="coordinatorServer" class="coordinator-server" aria-label="Coordinator server"><div class="coordinator-head"><h4>Coordinator server</h4><span id="coordStatus" class="coord-status"></span></div><div class="coordinator-grid"><div><div class="eyebrow">Initial dispatch</div><strong id="coordDispatch"></strong><small>One startup cursor; data servers take it from there.</small></div><div><div class="eyebrow">Unique result receipts</div><strong id="coordInboxSummary"></strong><ul id="coordInbox" class="coordinator-inbox"></ul></div><div><div class="eyebrow">Completion condition</div><strong id="coordWork"></strong><small id="coordBranches"></small><small id="coordRoot"></small></div></div><p id="coordWhy" class="coord-why" role="status"></p><div class="coordinator-result"><strong id="coordResultLabel"></strong><div id="coordResults" class="chips"></div><span id="coordResultCount" class="small"></span></div><p class="coordinator-note">rootDone carries the subtree result-message total. Completion uses only that expected count and unique received result IDs. No global queue or server-state visibility.</p></section><section class="live-process-panel" aria-label="Concurrent cursor processes"><h3 id="liveSummary"></h3><p>Every eligible worker gets one bounded turn per simulator tick. A waiting parent is a join record, not another movie worker. Local mailboxes are separate from network delivery.</p><div id="liveProcesses" class="live-processes"></div><div id="joinRecords" class="join-records"></div></section><div class="graph-tabs" role="tablist" aria-label="Graph view"><button id="tabOne" role="tab" tabindex="-1" aria-selected="false" aria-controls="oneServer">1 server</button><button id="tabThree" role="tab" tabindex="0" aria-selected="true" aria-controls="threeServers">3 servers</button></div>
 <div id="oneServer" role="tabpanel" aria-labelledby="tabOne" hidden><p class="graph-view-note">Complete canonical dataset · input to one local WASM instance. Highlight follows the selected simulation snapshot.</p><div id="graphAll" class="zega-graph"></div></div>
 <div id="threeServers" role="tabpanel" aria-labelledby="tabThree"><p class="graph-view-note">Three simulated owners · each canvas contains owned nodes and dashed boundary references. No network requests.</p><div class="server-graphs"><section class="server-graph" style="--server:#167d9a"><h4>Server A <span id="ownedA"></span></h4><div id="graphA" class="zega-graph"></div></section><section class="server-graph" style="--server:#a76718"><h4>Server B <span id="ownedB"></span></h4><div id="graphB" class="zega-graph"></div></section><section class="server-graph" style="--server:#7956b3"><h4>Server C <span id="ownedC"></span></h4><div id="graphC" class="zega-graph"></div></section></div></div>
 <output id="graphInspection" class="graph-inspection">Click a node or relationship to inspect it. Drag to navigate; scroll to zoom. Each canvas has zoom, fit and layout controls.</output></div></div><div class="graph-note"><span class="legend"><i class="wire"></i> coordinator messages</span><span class="legend"><i class="transfer"></i> direct cursor transfer</span><span class="legend"><i></i> active cursor</span><span class="legend"><i class="wait"></i> waiting parent</span><span class="legend"><i class="result"></i> received result</span></div></section>
-<div class="right-stack"><section class="card event" id="currentEventPanel" tabindex="0" aria-label="Current transition" aria-live="polite"><div class="event-top"><span class="eyebrow">Current event</span><span class="event-type" id="eventType"></span></div><h3 id="eventTitle"></h3><p id="eventDetail"></p><div id="eventRoute" class="route hidden"></div></section>
+<div class="right-stack"><section class="card event" id="currentEventPanel" tabindex="0" aria-label="Current simulator tick" aria-live="polite"><div class="event-top"><span class="eyebrow">Current tick</span><span class="event-type" id="eventType"></span></div><h3 id="eventTitle"></h3><p id="eventDetail"></p><ol id="tickEvents" class="tick-events" aria-label="All events in the selected tick"></ol><div id="eventRoute" class="route hidden"></div></section>
 <section class="card result-card" id="userResponsePanel" aria-label="User query response and verification"><div class="eyebrow">Results at the coordinator</div><div class="stats"><div class="stat"><strong id="distinctCount">0</strong><span>distinct nodes</span></div><div class="stat"><strong id="pathCount">0</strong><span>result messages</span></div><div class="stat" title="Expected logical result messages reported by rootDone. Question mark means rootDone has not arrived."><strong id="pendingCount">1</strong><span>expected messages</span></div></div><div id="responseFlow" class="response-flow" role="status"><span>Coordinator</span><svg viewBox="0 0 46 18" width="46" height="18" aria-hidden="true" data-response-flow-arrow="true"><path d="M2 9 H40 M33 3 L40 9 L33 15" fill="none" stroke="currentColor" stroke-width="2"/></svg><strong id="responseUpdateLabel"></strong></div><p id="responseChangeDetail" class="response-change-detail"></p><p id="aggregationProgress" class="received-json-note" role="status" hidden></p><div class="received-json-label" id="userResponseState"></div><pre class="received-json" tabindex="0" aria-label="JSON response for the displayed ZQL query"><code id="results"></code></pre><p class="received-json-note">Selected fields only. Partial response uses actual receipts; distinct node identities remain separate even if their selected values are equal.</p><div class="received-reference-label">Protocol DFS check · observer</div><div id="verification" class="verification"></div></section></div>
 <div id="responseConnector" class="response-connector" aria-hidden="true"></div></div>
-<section class="card execution-card" aria-labelledby="executionTitle"><div class="card-head"><h3 id="executionTitle">Cursor execution timeline</h3><span id="executionSummary" class="small"></span></div><p class="execution-caption">Each cursor keeps its own lane across servers. Forks create lanes; dashed ACK arrows return completion counts to parents. Reaching the same graph node does not merge walks.</p><div class="execution-legend"><span>● local progress</span><span>□ server transfer · same lane</span><span>⑂ fork · child lane</span><span>⇢ ACK count · parent join</span><span>◆ result emitted</span><span>× retry ignored · no execution</span><span>┄ after finish · messages only</span><span class="execution-server-key">A <i style="background:#167d9a"></i> B <i style="background:#a76718"></i> C <i style="background:#7956b3"></i></span></div><div class="execution-layout"><div id="executionLanes" class="execution-lanes"></div><div id="executionScroll" class="execution-scroll" tabindex="0" aria-label="Scroll execution timeline horizontally"><div id="executionGraph"></div></div></div><section class="execution-detail" aria-labelledby="executionEventHeading"><h4 id="executionEventHeading" tabindex="-1"></h4><dl id="executionDetails"></dl><p id="executionDescription"></p><p class="small">Select a marker with a click or Enter/Space to inspect that recorded step in every view. Step or the recorded-state slider moves forward again.</p></section></section>
-<section class="card protocol-observer"><div class="card-head"><h3>Directed-link queues</h3><span id="transportStats" class="small"></span></div><p class="observer-note">Simulation observer only: these queues and local states are not consulted by coordinator completion.</p><p id="scheduleNote" class="schedule-note"></p><div id="linkQueues" class="link-grid"></div></section><section class="card protocol-observer"><div class="card-head"><h3>Local data-server state</h3><span class="small">Own emissions + child subtree counts</span></div><div id="serverStates" class="server-grid"></div></section><div class="timeline"><span>RECORDED STATES</span><input id="timeline" type="range" min="0" max="0" value="0" aria-label="Browse recorded states"><span id="timelineLabel">0 / 0</span></div>
+<section class="card execution-card" aria-labelledby="executionTitle"><div class="card-head"><h3 id="executionTitle">Cursor timeline · simulator ticks</h3><span id="executionSummary" class="small"></span></div><p class="execution-caption">Events in the same column share simulator time. Workers keep their own lanes across servers; parents with children become labeled join records. Forks create worker lanes; dashed ACK arrows return completion counts to parents. Reaching the same graph node does not merge walks.</p><div class="execution-legend"><span>○ inbox arrival · consumed later</span><span>● process turn</span><span>□ server transfer · same lane</span><span>⑂ fork · child lane</span><span>⇢ ACK count · parent join</span><span>◆ result emitted</span><span>× retry ignored · no execution</span><span>┄ after finish · messages only</span><span class="execution-server-key">A <i style="background:#167d9a"></i> B <i style="background:#a76718"></i> C <i style="background:#7956b3"></i></span></div><div class="execution-layout"><div id="executionLanes" class="execution-lanes"></div><div id="executionScroll" class="execution-scroll" tabindex="0" aria-label="Scroll execution timeline horizontally"><div id="executionGraph"></div></div></div><section class="execution-detail" aria-labelledby="executionEventHeading"><h4 id="executionEventHeading" tabindex="-1"></h4><dl id="executionDetails"></dl><p id="executionDescription"></p><p class="small">Select a marker or tick event to inspect its captured event-time details. Graphs and results show the completed tick snapshot. Step tick or the recorded-tick slider moves forward again.</p></section></section>
+<section class="card protocol-observer"><div class="card-head"><h3>Directed-link queues</h3><span id="transportStats" class="small"></span></div><p class="observer-note">Simulation observer only: these queues and local states are not consulted by coordinator completion.</p><p id="scheduleNote" class="schedule-note"></p><div id="linkQueues" class="link-grid"></div></section><section class="card protocol-observer"><div class="card-head"><h3>Local data-server state</h3><span class="small">Own emissions + child subtree counts</span></div><div id="serverStates" class="server-grid"></div></section><div class="timeline"><span>RECORDED TICKS</span><input id="timeline" type="range" min="0" max="0" value="0" aria-label="Browse recorded states"><span id="timelineLabel">0 / 0</span></div>
 <div class="lower-grid">
 <section class="card"><div class="card-head"><h3>Cursor inspector</h3><span id="cursorCount" class="small"></span></div><div class="panel-body"><div class="cursor-tabs" id="cursorTabs"></div><dl class="inspector" id="inspector"></dl><div class="path" id="cursorPath"></div></div></section>
 <section class="card"><div class="card-head"><h3>Next scheduled work</h3><span id="queueCount" class="small"></span></div><div class="panel-body"><ol class="queue" id="queue"></ol></div></section>
@@ -456,7 +458,7 @@ THIS SOFTWARE.
 </pre></details></footer>
 <div id="checkReport" class="check-report hidden" role="status"></div>
 </main>
-<div id="playbackControls" class="buttons playback-controls" role="group" aria-label="Simulation controls"><div class="floating-selectors"><div class="floating-field"><label for="scenario">SCENARIO</label><select id="scenario"></select></div><div class="floating-field"><label for="schedule">NETWORK DELIVERY</label><select id="schedule"></select></div></div><span class="step-label" id="stepLabel"></span><button id="back" title="Previous recorded state">← Back</button><button id="step" class="primary">Step →</button><button id="play">▶ Play</button><button id="reset">Reset</button></div>
+<div id="playbackControls" class="buttons playback-controls" role="group" aria-label="Simulation controls"><div class="floating-selectors"><div class="floating-field"><label for="scenario">SCENARIO</label><select id="scenario"></select></div><div class="floating-field"><label for="schedule">NETWORK DELIVERY</label><select id="schedule"></select></div></div><span class="step-label" id="stepLabel"></span><button id="back" title="Previous recorded state">← Back</button><button id="step" class="primary">Step tick →</button><button id="play">▶ Play</button><button id="reset">Reset</button></div>
 </div>
 <script id="runtime-ready">window.ZegaRuntime=new Promise((resolve,reject)=>{window.__resolveZega=resolve;window.__rejectZega=reject;});window.ZegaRuntime.catch(()=>{});</script>
 <script id="zega-runtime" type="module">
@@ -1556,6 +1558,151 @@ try { const bytes=Uint8Array.from(atob("AGFzbQEAAAABhQdmYAJ/fwF/YAJ/fwBgAX8AYAN/
 })(typeof globalThis!=='undefined'?globalThis:this);
 
 </script>
+<script id="cursor-ticks">
+/* Simulator logical time. The protocol kernel remains independently testable at event granularity.
+ * Start-of-tick inputs -> one bounded turn per process -> canonical commit -> future eligibility.
+ * This is a visualization clock, not a distributed global barrier or physical CPU/network model.
+ */
+(function(root){
+'use strict';
+const K=CursorLab,copy=x=>JSON.parse(JSON.stringify(x)),own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+const compare=(a,b)=>a<b?-1:a>b?1:0;
+const hash=text=>{let h=2166136261;for(const ch of text)h=Math.imul(h^ch.charCodeAt(0),16777619);return h>>>0;};
+const schedules=Object.freeze({...K.schedules,cfirst:'FIFO · C arrives sooner'});
+const scheduleNotes=Object.freeze({
+ fifo:'Network: one FIFO arrival per directed link per tick; one-tick latency. Every eligible cursor gets its own bounded turn.',
+ lifo:'Network: newer eligible messages arrive first within each link; aging protects older messages. Cursor scheduling stays independent.',
+ cfirst:'Network: FIFO links, latency to C=1, B=2, A=3, coordinator=1 ticks. Every eligible cursor still gets a turn.',
+ delayed:'Network: result reports have 30-tick latency; control traffic has one. Workers can report and terminate while reports remain in transit.',
+ duplicates:'Network: every logical message has one retry; result reports have 30-tick latency. Retry IDs and completion counts remain stable.',
+ seeded:'Network: deterministic 1–4 tick latency, reorder and retries (seed 12648430). Cursor turns remain independent; aging protects older traffic. Fault injection also retries a bounded subset of local operation tokens.'
+});
+const key=q=>q.to==='coordinator'?'coordinator':q.to+'/'+(q.kind==='ack'?q.payload.parent:q.payload.cursor.id);
+function delay(core,runtime,q){
+ const override=runtime.delays[q.kind];
+ if(override!==undefined)return override;
+ if(['delayed','duplicates'].includes(core.schedule)&&q.kind==='result')return 30;
+ if(core.schedule==='cfirst')return {C:1,B:2,A:3,coordinator:1}[q.to];
+ if(core.schedule==='seeded')return 1+hash(q.id+':'+q.copy+':'+core.seed)%4;
+ return 1;
+}
+function enroll(core,runtime,tick){
+ for(const q of K.messages(core))if(!own(runtime.wires,q.wire)){
+  const local=q.from===q.to;
+  runtime.wires[q.wire]={sentAt:tick,eligibleAt:tick+(local?1:delay(core,runtime,q)),arrivedAt:local?tick:null,local};
+  if(local){const address=key(q);(runtime.inboxes[address]||=[]).push(q.wire);}
+ }
+ for(const m of Object.values(core.machines))for(const task of m.ready)if(!own(runtime.tasks,task.ticket))runtime.tasks[task.ticket]=tick+1;
+}
+function create(scenario='chain',schedule='fifo',override,options={}){
+ const core=K.create(scenario,schedule,override,options),runtime={tick:0,wires:{},tasks:{},inboxes:{},delays:copy(options.networkDelays||{}),trace:[],completedAt:null};
+ for(const n of Object.values(runtime.delays))if(!Number.isInteger(n)||n<1||n>100)throw Error('Network delays must be integer simulator ticks from 1 to 100');
+ enroll(core,runtime,0);
+ return view(core,runtime,[],{type:'start',title:'Tick 0 · ready to start',detail:'Each Step advances simulator time. At tick start, eligible cursor/inbox turns and independent link arrivals are fixed. New work waits until the next tick.'});
+}
+function plan(s,options={}){
+ const core=s.kernel,r=s.runtime,tick=r.tick+1,byActor=new Map(),queued=new Map(K.messages(core).map(q=>[q.wire,q]));
+ function actor(id){if(!byActor.has(id))byActor.set(id,{id,tasks:[],inbox:[]});return byActor.get(id);}
+ for(const m of Object.values(core.machines))for(const task of m.ready)if(r.tasks[task.ticket]<=tick)actor(m.id+'/'+task.cursor).tasks.push({...task,kind:'run',server:m.id,to:m.id});
+ for(const [id,wires]of Object.entries(r.inboxes))for(const wire of wires){const q=queued.get(wire);if(q&&r.wires[wire].eligibleAt<=tick)actor(id).inbox.push(q);}
+ // A decision reads only this process's frozen task/inbox input. Commit order is separate.
+ let inputs=[...byActor.values()].sort((a,b)=>compare(a.id,b.id));
+ if(options.turnOrder==='reverse')inputs.reverse();
+ const turns=inputs.map(input=>{
+  options.onDecision?.(input.id);
+  input.tasks.sort((a,b)=>a.serial-b.serial);input.inbox.sort((a,b)=>r.wires[a.wire].arrivedAt-r.wires[b.wire].arrivedAt||a.serial-b.serial);
+  const q=input.tasks[0]||input.inbox[0];
+  return {actor:input.id,kind:q.kind==='run'?'operation':'receive',choice:q.ticket||q.wire,item:copy(q)};
+ }).sort((a,b)=>compare(a.actor,b.actor));
+ const links=[];
+ for(const [linkId,link]of Object.entries(core.links)){
+  const transit=link.queue.filter(q=>r.wires[q.wire].arrivedAt===null);
+  const ready=transit.filter(q=>r.wires[q.wire].eligibleAt<=tick);if(!ready.length)continue;
+  let q;
+  if(['fifo','cfirst','delayed','duplicates'].includes(core.schedule)){
+   // Delay-results schedules allow control traffic past deliberately delayed results.
+   const lane=['delayed','duplicates'].includes(core.schedule)?transit.filter(q=>q.kind!=='result'):transit;
+   const head=lane[0]||transit[0];if(r.wires[head.wire].eligibleAt<=tick)q=head;
+  }else{
+   const oldest=ready.reduce((a,b)=>a.serial<b.serial?a:b);
+   if(tick-r.wires[oldest.wire].eligibleAt>=8)q=oldest;
+   else if(core.schedule==='lifo')q=ready.at(-1);
+   else q=ready.slice().sort((a,b)=>hash(a.wire+':'+tick+':'+core.seed)-hash(b.wire+':'+tick+':'+core.seed)||a.serial-b.serial)[0];
+  }
+  if(q)links.push({link:linkId,item:copy(q)});
+ }
+ links.sort((a,b)=>compare(a.link,b.link));
+ return {tick,turns,arrivals:links};
+}
+function eventContext(before,after,e,q){
+ const cursor=e.cursor||null,previous=cursor?before.cursors[cursor]:null,current=cursor?after.cursors[cursor]:null;
+ const path=q?.payload?.path||q?.payload?.cursor?.path||(e.type==='follow'?previous?.path:current?.path)||[];
+ return {before:previous?copy(previous):null,after:current?copy(current):null,path:copy(path),expected:after.control.expected,received:Object.keys(after.control.results).length};
+}
+function step(previous,options={}){
+ if(previous.quiescent)return copy(previous);
+ assertState(previous);
+ const frozen=plan(previous,options),runtime=copy(previous.runtime);let core=copy(previous.kernel);const events=[];
+ runtime.tick=frozen.tick;
+ for(const turn of frozen.turns){
+  const before=core,q=turn.item;core=K.step(core,turn.choice);
+  if(turn.kind==='receive')runtime.inboxes[turn.actor]=runtime.inboxes[turn.actor].filter(wire=>wire!==turn.choice);
+  const e={...copy(core.event),tick:frozen.tick,eventId:'event:'+core.tick,actor:turn.actor,turn:true,context:eventContext(before,core,core.event,q)};
+  events.push(e);
+ }
+ for(const {link,item:q}of frozen.arrivals){
+  runtime.wires[q.wire].arrivedAt=frozen.tick;runtime.wires[q.wire].eligibleAt=frozen.tick+1;
+  const address=key(q);(runtime.inboxes[address]||=[]).push(q.wire);
+  const cursor=q.to==='coordinator'?q.payload.cursor||'c1':q.kind==='ack'?q.payload.parent:q.payload.cursor.id;
+  const e={type:'network',tick:frozen.tick,eventId:'arrival:'+q.wire,actor:address,turn:false,cursor,from:q.from,to:q.to,messageId:q.id,wire:q.wire,messageKind:q.kind,
+   title:q.kind+' arrives in '+address+' inbox',detail:'Independent '+link+' delivery. This input can be consumed no earlier than tick '+(frozen.tick+1)+'. No cursor runs twice in this tick.',context:eventContext(core,core,{cursor},q)};
+  events.push(e);
+ }
+ // Sends/spawns happened during this tick and were absent from its frozen plan.
+ enroll(core,runtime,frozen.tick);
+ runtime.trace.push(...events);
+ if(core.complete&&runtime.completedAt===null)runtime.completedAt=frozen.tick;
+ const workers=frozen.turns.filter(t=>t.actor!=='coordinator').length;
+ const summary={type:'tick',title:'Tick '+frozen.tick+' · '+workers+' process turns · '+frozen.arrivals.length+' network arrivals',
+  detail:(frozen.turns.some(t=>t.actor==='coordinator')?'Coordinator independently consumed a report. ':'')+(events.length?'All events in this tick are listed below. ':'Waiting for scheduled message eligibility. ')+
+   'Every eligible cursor gets one bounded turn; new spawns, operations and messages wait for a later tick. Ticks are simulator time, not a production barrier or performance measurement.'};
+ const result=view(core,runtime,events,summary);assertState(result);return result;
+}
+function view(core,runtime,events,event){
+ const messages=K.messages(core),links={};
+ for(const [id,link]of Object.entries(core.links))if(link.from!==link.to)links[id]={...link,queue:link.queue.filter(q=>runtime.wires[q.wire].arrivedAt===null).map(q=>({...q,eligibleAt:runtime.wires[q.wire].eligibleAt})),
+  delivered:Object.values(runtime.wires).filter(w=>!w.local&&w.arrivedAt!==null&&messages.some(q=>q.wire===w.wire&&q.link===id)).length+link.delivered,
+  recent:runtime.trace.filter(e=>e.type==='network'&&e.from===link.from&&e.to===link.to).slice(-5).map(e=>({tick:e.tick,kind:e.messageKind,id:e.messageId,duplicate:false}))};
+ return {...core,kernel:core,runtime,tick:runtime.tick,completionTick:runtime.completedAt,events,history:runtime.trace,event,links,
+  metrics:{...core.metrics,attemptsSent:Object.values(runtime.wires).filter(w=>!w.local).length,delivered:Object.values(runtime.wires).filter(w=>!w.local&&w.arrivedAt!==null).length,localMailboxAttempts:Object.values(runtime.wires).filter(w=>w.local).length,networkArrivals:Object.values(runtime.wires).filter(w=>!w.local&&w.arrivedAt!==null).length}};
+}
+function processes(s){
+ const next=plan(s),ready=new Map(next.turns.map(t=>[t.actor,t]));
+ return Object.values(s.cursors).map(c=>{
+  const address=c.server+'/'+c.id,join=c.children.length>0,inbox=(s.runtime.inboxes[address]||[]).length,turn=ready.get(address);
+  return {id:c.id,server:c.server,target:c.transitTo||null,node:c.path.at(-1),role:join?'join record':'worker',state:c.pc,
+   status:c.pc==='done'?'terminated':turn?(turn.kind==='receive'?'ready to receive':'runnable: '+c.pc):c.pc==='wait'?'waiting for child counts':['route','dispatch','forwarded'].includes(c.pc)?'in flight':'blocked',inbox,ownCount:c.ownCount,joined:Object.keys(c.childCounts).length,children:c.children.length};
+ });
+}
+function workItems(s){
+ return K.workItems(s.kernel).map(q=>q.kind==='run'?{...q,eligibleAt:s.runtime.tasks[q.ticket]}:{...q,messageKind:q.kind,kind:s.runtime.wires[q.wire].arrivedAt===null?q.kind:'inbox',eligibleAt:s.runtime.wires[q.wire].eligibleAt});
+}
+function assertState(s){
+ K.assertState(s.kernel);
+ if(s.tick!==s.runtime.tick)throw Error('Invariant: logical tick mismatch');
+ const pending=new Set(K.messages(s.kernel).map(q=>q.wire)),inboxes=Object.values(s.runtime.inboxes).flat();
+ if(new Set(inboxes).size!==inboxes.length||inboxes.some(w=>!pending.has(w)||s.runtime.wires[w].arrivedAt===null))throw Error('Invariant: invalid process inbox');
+ const actors=s.events.filter(e=>e.turn).map(e=>e.actor);if(new Set(actors).size!==actors.length)throw Error('Invariant: process received two turns in one tick');
+ if(s.events.some(e=>e.tick!==s.tick))throw Error('Invariant: event belongs to another tick');
+ return true;
+}
+function injectDuplicate(s,id,count=1){const core=K.injectDuplicate(s.kernel,id,count),runtime=copy(s.runtime);enroll(core,runtime,s.tick);return view(core,runtime,[],s.event);}
+root.CursorTicks=Object.freeze({...K,schedules,scheduleNotes,create,step,plan,processes,workItems,assertState,injectDuplicate,
+ messages:s=>Object.values(s.links).flatMap(l=>l.queue),pick:()=>-1,pending:s=>K.pending(s.kernel),active:s=>K.active(s.kernel),
+ comparison:s=>K.comparison(s.kernel),coordinator:s=>K.coordinator(s.kernel),injectTaskDuplicate:(s,server,ticket)=>{const core=K.injectTaskDuplicate(s.kernel,server,ticket),r=copy(s.runtime);enroll(core,r,s.tick);return view(core,r,[],s.event);}});
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+</script>
 <script id="execution-timeline">
 /* Read-only projection of recorded snapshots. No execution, scheduler, or oracle. */
 (function(root){
@@ -1628,6 +1775,57 @@ try { const bytes=Uint8Array.from(atob("AGFzbQEAAAABhQdmYAJ/fwF/YAJ/fwBgAX8AYAN/
     return {currentTick,data:copy(states.at(-1).data),lanes,events,forks,joins,selected:events.at(-1),coordinator:{expected:states.at(-1).control.expected,received:Object.keys(states.at(-1).control.results).length}};
   }
   root.CursorTimeline=Object.freeze({project});
+})(typeof globalThis!=='undefined'?globalThis:this);
+
+</script>
+<script id="tick-timeline">
+/* Tick-aware read-only timeline. Event context is captured when the bounded turn commits. */
+(function(root){
+'use strict';
+const legacy=CursorTimeline,copy=x=>JSON.parse(JSON.stringify(x));
+function project(recorded,currentTick,selectedId){
+ if(!recorded[0]?.kernel)return legacy.project(recorded,currentTick);
+ const states=recorded.filter(s=>s.tick<=currentTick).sort((a,b)=>a.tick-b.tick);
+ if(!states.length||states.at(-1).tick!==currentTick)throw Error('Visible tick snapshot is missing');
+ const lanes=[],byId={},events=[],forks=[],joins=[],executions={};
+ function lane(c,tick){if(c&&!byId[c.id]){const l={id:c.id,parent:c.parent,parentServer:c.parentServer,birthTick:tick,finishTick:null,segments:[],current:null};byId[c.id]=l;lanes.push(l);}}
+ for(let index=0;index<states.length;index++){
+  const s=states[index];for(const c of Object.values(s.cursors))lane(c,s.tick);
+  const source=s.tick===0?[{...s.event,eventId:'start',tick:0,context:{after:s.cursors.c1,path:s.cursors.c1.path,expected:null,received:0}}]:s.events;
+  for(const e of source){
+   const message=e.messageId?s.logical[e.messageId]:null,p=message?.payload,c=e.context?.after||null;
+   const original=e.type==='duplicate'&&e.messageKind==='run'?executions[e.messageId]:null;
+   const node=original?.node||e.node||p?.node||e.context?.path?.at(-1)||null;
+   const onCoordinator=e.actor==='coordinator'||e.type==='start';
+   const marker=e.type==='network'?'network':e.type==='duplicate'?'duplicate':e.type==='emit'?'emission':e.type==='fork'?'fork':e.type==='join'?'ack':
+    ['dispatch','transfer','transfer-send'].includes(e.type)?'transfer':e.type==='finish'?'finish':onCoordinator?'receipt':'operation';
+   const entry={tick:e.tick,eventId:e.eventId,type:e.type,marker,lane:onCoordinator?'@coordinator':e.cursor||'@coordinator',cursor:e.cursor||null,node,
+    depth:original?.depth??(e.context?.path?.length?e.context.path.length-1:null),server:original?.server||e.to||e.actor?.split('/')[0]||c?.server||'coordinator',
+    from:e.from||null,to:e.to||null,title:e.title,detail:e.detail,messageKind:e.messageKind||null,messageId:e.messageId||null,executionId:e.executionId||null,
+    status:c?.pc||'inbox',cursorServer:c?.server||null,generation:c?.generation??null,ownCount:c?.ownCount??null,childCounts:c?copy(c.childCounts):null,
+    children:c?c.children.slice():null,subtreeCount:c?.total??null,expected:e.context?.expected??null,received:e.context?.received??0};
+   events.push(entry);if(e.executionId)executions[e.executionId]=entry;
+   if(e.type==='fork')for(const child of c.children)forks.push({tick:s.tick,parent:c.id,child});
+   if(e.type==='finish'&&byId[e.cursor])byId[e.cursor].finishTick=s.tick;
+   if(e.type==='join'){
+    const child=byId[p.child];if(!child||child.finishTick===null)throw Error('ACK has no completed child');
+    joins.push({eventId:e.eventId,tick:s.tick,sourceTick:child.finishTick,parent:p.parent,child:p.child,count:p.count,from:e.from,to:e.to});
+   }
+  }
+  const end=states[index+1]?.tick??s.tick;
+  for(const l of lanes){
+   const c=s.cursors[l.id];if(!c)continue;
+   l.current={server:c.server,status:c.pc,generation:c.generation,depth:c.path.length-1,node:c.path.at(-1),ownCount:c.ownCount,childCounts:copy(c.childCounts),children:c.children.slice(),subtreeCount:c.total,role:c.children.length?'join record':'worker'};
+   if(end<=s.tick)continue;
+   const style=l.finishTick!==null?'messages':c.pc==='wait'?'waiting':['route','dispatch','forwarded'].includes(c.pc)?'inflight':'execution',previous=l.segments.at(-1);
+   if(previous&&previous.end===s.tick&&previous.server===c.server&&previous.style===style)previous.end=end;
+   else l.segments.push({start:s.tick,end,server:c.server,style});
+  }
+ }
+ const final=states.at(-1);
+ return {currentTick,data:copy(final.data),lanes,events,forks,joins,selected:events.find(e=>e.eventId===selectedId)||events.at(-1),coordinator:{expected:final.control.expected,received:Object.keys(final.control.results).length}};
+}
+root.CursorTimeline=Object.freeze({project});
 })(typeof globalThis!=='undefined'?globalThis:this);
 
 </script>
@@ -2326,7 +2524,7 @@ return {stopSim,renderGraph,canvasSize};
 /* Canonical fixture -> four independent instances of the reused Zega canvas. */
 (function(root){
 'use strict';
-const E=CursorLab;
+const E=typeof CursorTicks!=='undefined'?CursorTicks:CursorLab;
 function dataset(data,server){
  const ids=new Map(data.nodes.map((n,i)=>[n.id,i+1]));
  const owns=new Set(data.nodes.filter(n=>!server||n.owner===server).map(n=>n.id));
@@ -2346,7 +2544,7 @@ function render(s,selected){
   for(const id of ['graphAll','graphA','graphB','graphC']){const el=$(id);root.CursorZegaGraph.stopSim(el);el._graph=null;}
  }
  const active=new Set(Object.values(s.cursors).filter(c=>!['done','forwarded'].includes(c.pc)).map(c=>c.path.at(-1)));
- if(s.event.node)active.add(s.event.node);
+ for(const event of s.events||[s.event]){if(event.node)active.add(event.node);for(const id of event.edge||[])active.add(id);}
  const chosen=s.cursors[selected];if(chosen)for(const id of chosen.path)active.add(id);
  for(const id of s.event.edge||[])active.add(id);
  // Empty active set means all visible, rather than a fabricated execution highlight.
@@ -2375,7 +2573,7 @@ if(typeof document!=='undefined'){
 <script id="simulation-ui">
 (function () {
   'use strict';
-  const E = CursorLab, $ = id => document.getElementById(id);
+  const E = typeof CursorTicks!=='undefined'?CursorTicks:CursorLab, $ = id => document.getElementById(id);
   const esc = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   // Verified against local ZQL lang/mod.rs (ranges/filters) and v2.rs walk_range.
   // This displays the distinct-reachability query; the JS engine also records walks.
@@ -2409,17 +2607,17 @@ if(typeof document!=='undefined'){
     }catch(error){if(ticket!==referenceToken)return;reference={status:'error',signature:key,result:null,error:String(error.message||error)};}
     renderReference(state());
   }
-  let snapshots = [], position = 0, selected = 'c1', timer = null;
+  let snapshots = [], position = 0, selected = 'c1', selectedEventId=null, timer = null;
   const state = () => snapshots[position];
   const label = (s, id) => E.node(s.data,id).name;
   const phase = { dispatch: 'initial dispatch queued', route: 'transfer queued', visit: 'read local node', emit: 'emit result', expand: 'follow / fork', wait: 'waiting for children', finish: 'finish queued', forwarded: 'forwarding tombstone', done: 'done' };
   function stop() { if (timer) clearInterval(timer); timer = null; $('play').textContent = '▶ Play'; }
-  function reset() { stop();invalidateReference(); snapshots = [E.create($('scenario').value, $('schedule').value)]; position = 0; selected = 'c1'; render(); }
+  function reset() { stop();invalidateReference(); snapshots = [E.create($('scenario').value, $('schedule').value)]; position = 0; selected = 'c1';selectedEventId=null; render(); }
   function advance() {
     try {
       if (position < snapshots.length - 1) position++;
       else if (!state().quiescent) { snapshots.push(E.step(state())); position++; }
-      selected = state().event.cursor || selected;
+      selected = state().event.cursor || selected;selectedEventId=null;
       if (state().quiescent) stop();
       render();
     } catch (error) { stop(); $('fatal').classList.remove('hidden'); $('fatal').textContent = 'Simulation stopped: ' + error.message; console.error(error); }
@@ -2437,26 +2635,26 @@ if(typeof document!=='undefined'){
         const description=q.kind==='result'?label(s,p.node)+' · '+E.names(s.data,p.path):q.kind==='ack'||q.kind==='rootDone'?'subtree '+p.child+' · count '+p.count:p.cursor.id+' · generation '+p.cursor.generation;
         return '<li>'+esc(q.kind)+(q.copy?'<span class="retry-pill">retry copy</span>':'')+'<br>'+esc(description)+'<br><span class="small">'+esc(q.id)+'</span></li>';
       }).join('');
-      const delivered=link.recent.slice(-2).reverse().map(q=>'<li class="received-frame">✓ step '+q.tick+' · '+esc(q.kind)+(q.duplicate?' · ignored duplicate':' · accepted')+'</li>').join('');
+      const delivered=link.recent.slice(-2).reverse().map(q=>'<li class="received-frame">✓ step '+q.tick+' · '+esc(q.kind)+(s.kernel?' · inbox arrival':q.duplicate?' · ignored duplicate':' · accepted')+'</li>').join('');
       return '<section class="link-box" data-directed-link="'+esc(key)+'"><h4>'+esc(key)+(link.from===link.to?' · local mailbox':'')+'</h4><p>'+link.queue.length+' pending / '+link.delivered+' delivered · '+link.logicalSent+' logical sends, '+link.attempts+' attempts</p><ul>'+pending+delivered+(pending||delivered?'':'<li>No traffic yet.</li>')+'</ul></section>';
     }).join('');
     $('serverStates').innerHTML=Object.values(s.machines).map(m=>{
       const rows=Object.values(m.cursors).map(c=>{
         const children=c.children.map(id=>id+': '+(Object.prototype.hasOwnProperty.call(c.childCounts,id)?c.childCounts[id]:'waiting')).join(' · ');
-        return '<li><strong>'+esc(c.id)+' / g'+c.generation+' · '+esc(phase[c.pc])+'</strong><span>own '+c.ownCount+' + children '+Object.values(c.childCounts).reduce((a,b)=>a+b,0)+' = '+(c.total===null?'not final':c.total)+' · '+(c.sealed?'child set sealed':'local work open')+'</span>'+(children?'<span>'+esc(children)+'</span>':'')+'<span>'+esc(E.names(s.data,c.path))+'</span></li>';
+        return '<li><strong>'+esc(c.id)+' / g'+c.generation+' · '+esc((c.children.length?'join record · ':'worker · ')+phase[c.pc])+'</strong><span>own '+c.ownCount+' + children '+Object.values(c.childCounts).reduce((a,b)=>a+b,0)+' = '+(c.total===null?'not final':c.total)+' · '+(c.sealed?'child set sealed':'local work open')+'</span>'+(children?'<span>'+esc(children)+'</span>':'')+'<span>'+esc(E.names(s.data,c.path))+'</span></li>';
       }).join('');
       return '<section class="server-box"><h4>Server '+m.id+'</h4><p>'+m.ready.length+' queued local tasks · '+Object.keys(m.accepted).length+' accepted delivery IDs · '+Object.keys(m.executed).length+' executed operation tokens</p><ul>'+(rows||'<li>No cursor state yet.</li>')+'</ul></section>';
     }).join('');
   }
   let lastExecutionTick=null;
   function renderExecutionTimeline(s){
-    const model=CursorTimeline.project(snapshots,s.tick),pitch=56,axis=32,row=70;
+    const model=CursorTimeline.project(snapshots,s.tick,selectedEventId),pitch=56,axis=32,row=70;
     const laneIds=['@coordinator',...model.lanes.map(l=>l.id)];
     const ys=Object.fromEntries(laneIds.map((id,i)=>[id,axis+i*row+row/2]));
     const x=tick=>24+tick*pitch,width=Math.max(600,x(model.currentTick)+40),height=axis+laneIds.length*row;
     const color=server=>E.servers[server]?.color||'#346748';
-    $('executionSummary').textContent=model.lanes.length+' cursor lane'+(model.lanes.length===1?'':'s')+' · visible through step '+s.tick;
-    $('executionLanes').innerHTML='<div class="execution-lane"><strong>Coordinator</strong><small>Receipt rail · not a cursor</small></div>'+model.lanes.map(l=>'<div class="execution-lane"><strong>'+esc(l.id)+'</strong><small>'+esc(l.parent?'child of '+l.parent:'root work')+'</small><small>'+esc(l.current.server+' · '+phase[l.current.status])+'</small></div>').join('');
+    $('executionSummary').textContent=model.lanes.length+' process/join lane'+(model.lanes.length===1?'':'s')+' · visible through tick '+s.tick;
+    $('executionLanes').innerHTML='<div class="execution-lane"><strong>Coordinator</strong><small>Receipt rail · not a cursor</small></div>'+model.lanes.map(l=>'<div class="execution-lane"><strong>'+esc(l.id)+'</strong><small>'+esc(l.current.role|| (l.parent?'child of '+l.parent:'root work'))+'</small><small>'+esc(l.current.server+' · '+phase[l.current.status])+'</small></div>').join('');
     let svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'" viewBox="0 0 '+width+' '+height+'" role="img" aria-label="Cursor execution through step '+s.tick+'. Time runs left to right; cursor IDs occupy separate lanes." data-visible-step="'+s.tick+'"><defs><marker id="execution-ack-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8160a8"/></marker></defs>';
     for(let tick=0;tick<=s.tick;tick++){
       if(tick%5===0||tick===s.tick)svg+='<line x1="'+x(tick)+'" y1="25" x2="'+x(tick)+'" y2="'+height+'" stroke="#e5ebdf"/><text x="'+x(tick)+'" y="17" text-anchor="middle" font-family="monospace" font-size="10" fill="'+(tick===s.tick?'#245d44':'#8b998a')+'">'+tick+'</text>';
@@ -2480,23 +2678,25 @@ if(typeof document!=='undefined'){
       svg+='<path data-timeline-kind="ack-join" data-parent="'+esc(join.parent)+'" data-child="'+esc(join.child)+'" data-step="'+join.tick+'" d="M '+sx+' '+ys[join.child]+' C '+middle+' '+ys[join.child]+' '+middle+' '+ys[join.parent]+' '+tx+' '+ys[join.parent]+'" fill="none" stroke="#8160a8" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#execution-ack-arrow)"><title>Completion ACK: '+esc(join.child)+' contributes '+join.count+' to '+esc(join.parent)+'. No graph nodes or paths are merged.</title></path>';
     }
     for(const event of model.events){
-      const xx=x(event.tick),yy=ys[event.lane];if(yy===undefined)continue;
+      const peers=model.events.filter(e=>e.tick===event.tick&&e.lane===event.lane),offset=peers.length>1?(peers.indexOf(event)-(peers.length-1)/2)*15:0;
+      const xx=x(event.tick)+offset,yy=ys[event.lane];if(yy===undefined)continue;
       const tint=color(event.server);let glyph,annotation='';
-      if(event.marker==='duplicate') {glyph='<path d="M '+(xx-5)+' '+(yy-5)+' L '+(xx+5)+' '+(yy+5)+' M '+(xx+5)+' '+(yy-5)+' L '+(xx-5)+' '+(yy+5)+'" stroke="#7a857a" stroke-width="2"/>';annotation='ignore';}
+      if(event.marker==='network'){glyph='<circle cx="'+xx+'" cy="'+yy+'" r="5" fill="white" stroke="#668ba9" stroke-width="1.7"/>';annotation='inbox';}
+      else if(event.marker==='duplicate') {glyph='<path d="M '+(xx-5)+' '+(yy-5)+' L '+(xx+5)+' '+(yy+5)+' M '+(xx+5)+' '+(yy-5)+' L '+(xx-5)+' '+(yy+5)+'" stroke="#7a857a" stroke-width="2"/>';annotation='ignore';}
       else if(event.marker==='emission'){glyph='<path d="M '+xx+' '+(yy-6)+' L '+(xx+6)+' '+yy+' L '+xx+' '+(yy+6)+' L '+(xx-6)+' '+yy+' Z" fill="#36805a"/>';annotation='emit';}
       else if(event.marker==='transfer'){glyph='<rect x="'+(xx-5)+'" y="'+(yy-5)+'" width="10" height="10" rx="1" fill="'+(event.type==='transfer-send'?'white':'#eab55c')+'" stroke="#a87213" stroke-width="1.8"/>';annotation=(event.type==='transfer-send'?'send ':'')+(event.from==='coordinator'?'coord':event.from)+'→'+event.to;}
       else if(event.marker==='fork'){glyph='<circle cx="'+xx+'" cy="'+yy+'" r="5" fill="#68875c"/>';annotation='fork';}
-      else if(event.marker==='ack'){glyph='<rect x="'+(xx-5)+'" y="'+(yy-5)+'" width="10" height="10" rx="3" fill="#f4edfb" stroke="#8160a8" stroke-width="1.8"/>';annotation='ACK '+model.joins.find(j=>j.tick===event.tick).count;}
+      else if(event.marker==='ack'){glyph='<rect x="'+(xx-5)+'" y="'+(yy-5)+'" width="10" height="10" rx="3" fill="#f4edfb" stroke="#8160a8" stroke-width="1.8"/>';annotation='ACK '+model.joins.find(j=>event.eventId?j.eventId===event.eventId:j.tick===event.tick).count;}
       else if(event.marker==='finish'){glyph='<circle cx="'+xx+'" cy="'+yy+'" r="6" fill="'+tint+'"/><path d="M '+(xx-3)+' '+yy+' l 2 2 l 4 -4" fill="none" stroke="white" stroke-width="1.4"/>';annotation='end '+event.subtreeCount;}
       else if(event.marker==='receipt'){glyph='<circle cx="'+xx+'" cy="'+yy+'" r="5" fill="#427cc4"/>';annotation=event.type==='complete'?'root '+event.expected:event.type==='start'?'query':'recv';}
       else {glyph='<circle cx="'+xx+'" cy="'+yy+'" r="4" fill="'+tint+'"/>';if(event.type==='read')annotation=event.node?label(s,event.node):'read';}
-      const aria='Step '+event.tick+': '+event.title+'. '+(event.cursor?'Cursor '+event.cursor+'. ':'')+'Select recorded state.';
-      svg+='<g class="execution-marker" role="button" tabindex="0" aria-label="'+esc(aria)+'" data-execution-step="'+event.tick+'" data-marker="'+event.marker+'" data-cursor="'+esc(event.cursor||'coordinator')+'"><title>'+esc(aria)+'</title><circle class="execution-hit" cx="'+xx+'" cy="'+yy+'" r="12" fill="'+(event.tick===s.tick?'#e3eedb':'transparent')+'" stroke="'+(event.tick===s.tick?'#9eb88e':'transparent')+'"/>'+glyph+(annotation?'<text x="'+xx+'" y="'+(yy+23)+'" text-anchor="middle" font-family="monospace" font-size="9" fill="'+(event.marker==='duplicate'?'#7a857a':'#637460')+'">'+esc(annotation)+'</text>':'')+'</g>';
+      const aria='Tick '+event.tick+': '+event.title+'. '+(event.cursor?'Cursor '+event.cursor+'. ':'')+'Select recorded state.';
+      svg+='<g class="execution-marker" role="button" tabindex="0" aria-label="'+esc(aria)+'" data-execution-step="'+event.tick+'" data-execution-event="'+esc(event.eventId||'')+'" data-marker="'+event.marker+'" data-cursor="'+esc(event.cursor||'coordinator')+'"><title>'+esc(aria)+'</title><circle class="execution-hit" cx="'+xx+'" cy="'+yy+'" r="12" fill="'+(event.tick===s.tick?'#e3eedb':'transparent')+'" stroke="'+(event.tick===s.tick?'#9eb88e':'transparent')+'"/>'+glyph+(annotation?'<text x="'+xx+'" y="'+(yy+23)+'" text-anchor="middle" font-family="monospace" font-size="9" fill="'+(event.marker==='duplicate'?'#7a857a':'#637460')+'">'+esc(annotation)+'</text>':'')+'</g>';
     }
     $('executionGraph').innerHTML=svg+'</svg>';
     if(lastExecutionTick!==s.tick){const pane=$('executionScroll');pane.scrollLeft=Math.max(0,x(s.tick)-(Number(pane.clientWidth)||600)+96);lastExecutionTick=s.tick;}
     const entry=model.selected;
-    $('executionEventHeading').textContent='Step '+entry.tick+' · '+entry.title;
+    $('executionEventHeading').textContent='Tick '+entry.tick+' · '+entry.title;
     const childText=entry.children?Object.keys(entry.childCounts).length+' / '+entry.children.length+' ACKs · '+(Object.entries(entry.childCounts).map(([id,count])=>id+'='+count).join(', ')||'none yet'):'not a cursor event';
     const fields={Cursor:entry.cursor||'coordinator', 'Event node':entry.node?label(s,entry.node):'not reported', 'Path depth':entry.depth===null?'not reported':entry.depth, 'Handled at':entry.server,
       'Cursor after':entry.cursor?(entry.cursorServer+' · '+(phase[entry.status]||entry.status)):'coordinator local state','After gen':entry.generation===null?'—':entry.generation,
@@ -2509,7 +2709,7 @@ if(typeof document!=='undefined'){
     const marker=event.target.closest?.('[data-execution-step]');if(!marker)return;
     const tick=Number(marker.dataset.executionStep);if(!Number.isInteger(tick)||tick<0||tick>state().tick)return;
     const index=snapshots.findIndex(s=>s.tick===tick);if(index<0)return;
-    stop();position=index;selected=CursorTimeline.project(snapshots,tick).selected.cursor||'c1';render();
+    stop();position=index;selectedEventId=marker.dataset.executionEvent||null;selected=CursorTimeline.project(snapshots,tick,selectedEventId).selected.cursor||'c1';render();
     if(typeof $('executionEventHeading').focus==='function')$('executionEventHeading').focus({preventScroll:true});
   }
   function renderUserResponse(s){
@@ -2521,7 +2721,7 @@ if(typeof document!=='undefined'){
     $('userResponseState').textContent=s.complete?'Final ZQL response':'Partial ZQL response · assembled from received results';
     $('userResponsePanel').classList.toggle('response-updated',change.changed);
     $('responseConnector').classList.toggle('is-active',change.changed);
-    $('responseUpdateLabel').textContent=change.changed?'Step '+s.tick+': return data updated':'No return-data change';
+    $('responseUpdateLabel').textContent=change.changed?'Tick '+s.tick+': return data updated':'No return-data change';
     $('responseChangeDetail').textContent=change.changed?(change.added.length?'+ Added '+change.added.map(entry=>JSON.stringify(entry)).join(', '):'↕ Existing response entries changed or reordered.'):
       s.tick===0?'Awaiting result receipts.':s.event.type==='duplicate'?'Protocol retry ignored; user response unchanged.':s.event.type==='result'?'A receipt arrived without changing the selected response; user response unchanged.':s.complete?'Query complete; return data unchanged on this step.':'Protocol step only; no user-response update.';
   }
@@ -2544,12 +2744,14 @@ if(typeof document!=='undefined'){
   function render() {
     const s=state(),e=s.event,coord=E.coordinator(s),comparison=E.comparison(s);
     E.assertState(s);
-    $('stepLabel').textContent='STEP '+String(s.tick).padStart(2,'0')+(s.quiescent?' · ALL TRAFFIC DRAINED':s.complete?' · QUERY DONE / RETRIES REMAIN':' · '+s.schedule.toUpperCase());
+    $('stepLabel').textContent='TICK '+String(s.tick).padStart(2,'0')+(s.quiescent?' · ALL TRAFFIC DRAINED':s.complete?' · QUERY DONE / RETRIES REMAIN':' · '+s.schedule.toUpperCase());
     $('back').disabled=position===0;
     $('step').disabled=s.quiescent&&position===snapshots.length-1;
     $('play').disabled=s.quiescent&&position===snapshots.length-1;
     $('timeline').max=snapshots.length-1;$('timeline').value=position;$('timelineLabel').textContent=position+' / '+(snapshots.length-1);
-    $('eventType').textContent=e.type;$('eventTitle').textContent=e.title;$('eventDetail').textContent=e.detail;
+    $('eventType').textContent=e.type;
+    $('tickEvents').innerHTML=(s.events||[s.event]).map(event=>'<li><button data-tick-event="'+esc(event.eventId||'')+'" data-cursor="'+esc(event.cursor||'')+'">'+esc(event.actor||event.to||event.from||'protocol')+' · '+esc(event.title)+'</button></li>').join('')||'<li>Waiting for scheduled message eligibility.</li>';
+    if(typeof E.processes==='function'){const live=E.processes(s),workers=live.filter(p=>p.role==='worker'),joins=live.filter(p=>p.role==='join record');$('liveSummary').textContent='Tick '+s.tick+' · '+workers.filter(p=>p.state!=='done').length+' live workers · '+joins.length+' join records';$('liveProcesses').innerHTML=workers.map(p=>'<div class="live-process '+(p.state==='done'?'terminated':'')+'" data-live-worker="'+esc(p.id)+'" style="--server:'+ (E.servers[p.server]?.color||'#668673')+'"><strong>'+esc(p.id)+' · '+esc(p.server+(p.target?' → '+p.target:''))+'</strong><span>'+esc(label(s,p.node))+'</span><span>'+esc(p.status)+' · inbox '+p.inbox+'</span></div>').join('');$('joinRecords').innerHTML=joins.map(p=>'<div data-join-record="'+esc(p.id)+'">'+esc(p.id)+' · join record · '+p.joined+'/'+p.children+' child counts · '+esc(p.status)+'</div>').join('');}$('eventTitle').textContent=e.title;$('eventDetail').textContent=e.detail;
     $('eventRoute').classList.toggle('hidden',!e.from);$('eventRoute').textContent=e.from?e.from+' → '+e.to:'';
     $('distinctCount').textContent=s.distinct.length;$('pathCount').textContent=coord.receivedResults;$('pendingCount').textContent=coord.expected===null?'?':coord.expected;
     const chips=s.distinct.length?[...s.distinct].sort().map(id=>'<span class="chip">'+esc(label(s,id))+'</span>').join(''):'<span class="empty">No unique results received.</span>';
@@ -2576,16 +2778,16 @@ if(typeof document!=='undefined'){
     $('cursorCount').textContent=cursors.filter(c=>!['done','forwarded'].includes(c.pc)).length+' open / '+cursors.length+' work IDs';
     $('cursorTabs').innerHTML=cursors.map(c=>'<button class="cursor-tab '+(c.id===selected?'selected ':'')+(c.pc==='done'?'done':'')+'" aria-pressed="'+(c.id===selected)+'" data-cursor="'+c.id+'">'+esc(c.id)+'</button>').join('');
     const c=s.cursors[selected]||s.cursors.c1;
-    const fields={State:phase[c.pc],Server:c.server,Epoch:'generation '+c.generation+' / operation '+c.op,Target:label(s,c.path.at(-1))+' (owner '+E.node(s.data,c.path.at(-1)).owner+')',Hops:(c.path.length-1)+' / '+s.data.maxHops,Parent:c.parent?c.parent+' @ '+c.parentServer:'coordinator',Own:c.ownCount+' emitted logical results',Children:c.children.length?Object.keys(c.childCounts).length+' / '+c.children.length+' joined · sum '+Object.values(c.childCounts).reduce((a,b)=>a+b,0):'none',Subtree:c.total===null?'not final':c.total,Sealed:c.sealed?'yes':'no'};
+    const fields={Inbox:s.runtime?(s.runtime.inboxes[c.server+'/'+c.id]||[]).length+' pending inputs':'event-kernel mode',Role:c.children.length?'join record':'worker',State:phase[c.pc],Server:c.server,Epoch:'generation '+c.generation+' / operation '+c.op,Target:label(s,c.path.at(-1))+' (owner '+E.node(s.data,c.path.at(-1)).owner+')',Hops:(c.path.length-1)+' / '+s.data.maxHops,Parent:c.parent?c.parent+' @ '+c.parentServer:'coordinator',Own:c.ownCount+' emitted logical results',Children:c.children.length?Object.keys(c.childCounts).length+' / '+c.children.length+' joined · sum '+Object.values(c.childCounts).reduce((a,b)=>a+b,0):'none',Subtree:c.total===null?'not final':c.total,Sealed:c.sealed?'yes':'no'};
     $('inspector').innerHTML=Object.entries(fields).map(([key,value])=>'<dt>'+key+'</dt><dd>'+esc(value)+'</dd>').join('');$('cursorPath').textContent=E.names(s.data,c.path);
     const items=E.workItems(s),next=E.pick(s);
     const ordered=items.map((q,i)=>({q,i})).sort((a,b)=>a.i===next?-1:b.i===next?1:a.i-b.i);
-    $('queueCount').textContent=items.length+' pending events';
+    $('queueCount').textContent=items.length+' pending items · independent next-tick turns';
     $('queue').innerHTML=ordered.length?ordered.map(({q},index)=>{
       let text,detail;
-      if(q.kind==='run'){text=q.cursor+' · local operation';detail='Server '+q.server+' · '+q.id;}
-      else {text=q.kind+(q.copy?' · retry copy':'');detail=q.from+' → '+q.to+' · '+q.id;if(['ack','rootDone'].includes(q.kind))detail+=' · count '+q.payload.count;}
-      return '<li><span class="qnum">'+(index?'·':'→')+'</span><span class="qbody">'+esc(text)+'<span class="qdetail">'+esc(detail)+'</span></span></li>';
+      if(q.kind==='run'){text=q.cursor+' · local operation';detail='Server '+q.server+' · '+q.id+(q.eligibleAt?' · eligible tick '+q.eligibleAt:'');}
+      else {text=q.kind+(q.kind==='inbox'?' · '+q.messageKind:'')+(q.copy?' · retry copy':'');detail=q.from+' → '+q.to+' · '+q.id+(q.eligibleAt?' · eligible tick '+q.eligibleAt:'');if(['ack','rootDone'].includes(q.kind))detail+=' · count '+q.payload.count;}
+      return '<li><span class="qnum">'+(s.kernel?'·':index?'·':'→')+'</span><span class="qbody">'+esc(text)+'<span class="qdetail">'+esc(detail)+'</span></span></li>';
     }).join(''):'<li class="empty">All modeled traffic drained.</li>';
     $('history').innerHTML=s.history.length?[...s.history].reverse().map(h=>'<li><time>'+String(h.tick).padStart(2,'0')+'</time><span>'+esc(h.title)+'</span></li>').join(''):'<li class="empty">Step through dispatch, emissions, joins and receipts.</li>';
     $('pathSummary').textContent='Unique path results · '+s.received.length+' received · retries deduplicate by message ID; people deduplicate separately';
@@ -2594,27 +2796,28 @@ if(typeof document!=='undefined'){
   }
   $('scenario').innerHTML = Object.entries(E.scenarios).map(([id, data]) => '<option value="' + id + '">' + data.name + '</option>').join('');
   $('schedule').innerHTML = Object.entries(E.schedules).map(([id, name]) => '<option value="' + id + '">' + name + '</option>').join('');
+  $('tickEvents').addEventListener('click',event=>{const button=event.target.closest?.('[data-tick-event]');if(!button)return;selectedEventId=button.dataset.tickEvent||null;selected=button.dataset.cursor||selected;render();});
   $('executionGraph').addEventListener('click', selectExecutionEvent);
   $('executionGraph').addEventListener('keydown', event => { if(event.key==='Enter'||event.key===' '){ event.preventDefault();selectExecutionEvent(event); } });
   if(typeof window.addEventListener==='function'){window.addEventListener('resize',refreshResponseConnector);window.addEventListener('cluster-graph-viewchange',refreshResponseConnector);}
   $('runZega').addEventListener('click',runReference);
   $('scenario').addEventListener('change', reset); $('schedule').addEventListener('change', reset);
   $('step').addEventListener('click', () => { stop(); advance(); });
-  $('back').addEventListener('click', () => { stop(); position = Math.max(0, position - 1); selected = state().event.cursor || 'c1'; render(); });
+  $('back').addEventListener('click', () => { stop(); position = Math.max(0, position - 1); selected = state().event.cursor || 'c1';selectedEventId=null; render(); });
   $('reset').addEventListener('click', reset);
   $('play').addEventListener('click', () => { if (timer) stop(); else { advance(); if (!state().quiescent) { timer = setInterval(advance, 700); $('play').textContent = 'Ⅱ Pause'; } } });
-  $('timeline').addEventListener('input', () => { stop(); position = Number($('timeline').value); selected = state().event.cursor || 'c1'; render(); });
+  $('timeline').addEventListener('input', () => { stop(); position = Number($('timeline').value); selected = state().event.cursor || 'c1';selectedEventId=null; render(); });
   $('cursorTabs').addEventListener('click', e => { const id = e.target.dataset.cursor; if (id) { selected = id; render(); } });
   $('checks').addEventListener('click', () => {
     const lines = []; let passed = 0;
     for (const scenario of Object.keys(E.scenarios)) for (const schedule of Object.keys(E.schedules)) {
-      try { let s = E.create(scenario, schedule); let guard = 0; while (!s.quiescent && guard++ < 2000) s = E.step(s); if (!s.quiescent || !E.comparison(s).passed) throw Error('reference mismatch or undrained traffic'); passed++; lines.push('PASS  ' + scenario.padEnd(8) + ' / ' + schedule.padEnd(6) + ' · ' + s.distinct.length + ' nodes, ' + s.received.length + ' paths, ' + s.tick + ' steps'); }
+      try { let s = E.create(scenario, schedule); let guard = 0; while (!s.quiescent && guard++ < 2000) s = E.step(s); if (!s.quiescent || !E.comparison(s).passed) throw Error('reference mismatch or undrained traffic'); passed++; lines.push('PASS  ' + scenario.padEnd(8) + ' / ' + schedule.padEnd(6) + ' · ' + s.distinct.length + ' nodes, ' + s.received.length + ' paths, ' + s.tick + ' ticks'); }
       catch (error) { lines.push('FAIL  ' + scenario + ' / ' + schedule + ' · ' + error.message); }
     }
     $('checkReport').classList.remove('hidden'); $('checkReport').textContent = passed + ' / ' + (Object.keys(E.scenarios).length*Object.keys(E.schedules).length) + ' reference checks passed. Invariants checked after every transition.\n' + lines.join('\n');
   });
   // Read-only diagnostics for local verification; the renderer never mutates engine state.
-  window.CursorLabUI = Object.freeze({ getState: () => JSON.parse(JSON.stringify(state())), getPosition: () => position, getRecordedCount: () => snapshots.length, coordinatorUserResponse, coordinatorResponseJSON, responseChange, connectorGeometry, getReference:()=>JSON.parse(JSON.stringify(reference)),runReference, getExecutionTimeline: () => CursorTimeline.project(snapshots,state().tick), queryText });
+  window.CursorLabUI = Object.freeze({ getState: () => JSON.parse(JSON.stringify(state())), getPosition: () => position, getRecordedCount: () => snapshots.length, coordinatorUserResponse, coordinatorResponseJSON, responseChange, connectorGeometry, getReference:()=>JSON.parse(JSON.stringify(reference)),runReference, getExecutionTimeline: () => CursorTimeline.project(snapshots,state().tick,selectedEventId), queryText });
   if(typeof ResizeObserver==='function'){const connectorObserver=new ResizeObserver(refreshResponseConnector);for(const id of ['mainGrid','coordinatorServer','coordResultLabel','userResponsePanel','responseFlow'])connectorObserver.observe($(id));}
   reset();
   // Reserve the actual floating-bar height when zoom or wrapping changes it.

@@ -1,0 +1,30 @@
+Movie processes · transfer latency 12 simulator ticks; no real timing claim.
+Tick 1 | dispatch arrives in A/c1 inbox | results=0 / ? | complete=false
+Tick 2 | Coordinator dispatches c1 → A | results=0 / ? | complete=false
+Tick 3 | c1 reads Robert Downey Jr. locally | results=0 / ? | complete=false
+Tick 4 | c1 registers 5 children | results=0 / ? | complete=false
+Tick 5 | c1.3 reads Signal Harbor locally | results=0 / ? | complete=false
+Tick 6 | c1.3 emits Signal Harbor | results=0 / ? | complete=false
+Tick 7 | Hop bound reached ; result arrives in coordinator inbox | results=0 / ? | complete=false
+Tick 8 | c1.3 completes subtree count 1 ; Unique result received: Signal Harbor | results=1 / ? | complete=false
+Tick 9 | Child count accepted; parent waits | results=1 / ? | complete=false
+Tick 10 |  | results=1 / ? | complete=false
+Tick 11 |  | results=1 / ? | complete=false
+Tick 12 |  | results=1 / ? | complete=false
+Tick 13 |  | results=1 / ? | complete=false
+Tick 14 |  | results=1 / ? | complete=false
+Tick 15 |  | results=1 / ? | complete=false
+Tick 16 | transfer arrives in B/c1.1 inbox ; transfer arrives in C/c1.2 inbox | results=1 / ? | complete=false
+Tick 17 | c1.1 arrives directly: A → B ; c1.2 arrives directly: A → C ; transfer arrives in B/c1.4 inbox ; transfer arrives in C/c1.5 inbox | results=1 / ? | complete=false
+Tick 18 | c1.1 reads Copper Horizon locally ; c1.4 arrives directly: A → B ; c1.2 reads Glass Atlas locally ; c1.5 arrives directly: A → C | results=1 / ? | complete=false
+Tick 19 | c1.1 emits Copper Horizon ; c1.4 reads Winter Circuit locally ; c1.2 emits Glass Atlas ; c1.5 reads Amber Relay locally | results=1 / ? | complete=false
+Tick 20 | Hop bound reached ; c1.4 emits Winter Circuit ; Hop bound reached ; c1.5 emits Amber Relay ; result arrives in coordinator inbox ; result arrives in coordinator inbox | results=1 / ? | complete=false
+Tick 21 | c1.1 completes subtree count 1 ; Hop bound reached ; c1.2 completes subtree count 1 ; Hop bound reached ; Unique result received: Copper Horizon ; result arrives in coordinator inbox ; result arrives in coordinator inbox | results=2 / ? | complete=false
+Tick 22 | c1.4 completes subtree count 1 ; c1.5 completes subtree count 1 ; Unique result received: Glass Atlas ; ack arrives in A/c1 inbox ; ack arrives in A/c1 inbox | results=3 / ? | complete=false
+Tick 23 | Child count accepted; parent waits ; Unique result received: Winter Circuit ; ack arrives in A/c1 inbox ; ack arrives in A/c1 inbox | results=4 / ? | complete=false
+Tick 24 | Child count accepted; parent waits ; Unique result received: Amber Relay | results=5 / ? | complete=false
+Tick 25 | Child count accepted; parent waits | results=5 / ? | complete=false
+Tick 26 | Final child count joined | results=5 / ? | complete=false
+Tick 27 | c1 completes subtree count 5 | results=5 / ? | complete=false
+Tick 28 | rootDone arrives in coordinator inbox | results=5 / ? | complete=false
+Tick 29 | rootDone promises 5 results · QUERY COMPLETE | results=5 / 5 | complete=true

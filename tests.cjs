@@ -163,7 +163,8 @@ test('100 seeded random graphs: cycles, self-links, varying owners/bounds and em
  }
 });
 
-const {harness}=require('./ui-harness.cjs');
+// Keep the event-kernel regressions; the production tick path is covered by tick-tests.cjs.
+const {harness:baseHarness}=require('./ui-harness.cjs'),harness=data=>baseHarness(data,{microsteps:true});
 test('UI: Step, Back, forward replay, Reset, Play/Pause and floating clearance',()=>{
  const h=harness(),{elements:el,click,state}=h;assert.equal(state().tick,0);click('step');const before=JSON.stringify(state());click('back');assert.equal(state().tick,0);click('step');assert.equal(JSON.stringify(state()),before);
  click('reset');assert.equal(state().tick,0);click('play');assert.equal(el.play.textContent,'Ⅱ Pause');click('play');assert.equal(el.play.textContent,'▶ Play');
@@ -185,7 +186,7 @@ test('UI: all 30 graph/schedule runs display true counts, link traffic, local st
    if(s.complete)assert.deepEqual(response,verifiedResponses[scenario].response);
    assert.equal(el.userResponseState.textContent,s.complete?'Final ZQL response':'Partial ZQL response · assembled from received results');
    const timeline=h.timeline();assert.equal(timeline.currentTick,s.tick);assert.equal(timeline.events.length,s.tick+1);assert(timeline.events.every(e=>e.tick<=s.tick));
-   assert(el.executionGraph.innerHTML.includes('data-visible-step="'+s.tick+'"'));assert(el.executionEventHeading.textContent.startsWith('Step '+s.tick+' · '));
+   assert(el.executionGraph.innerHTML.includes('data-visible-step="'+s.tick+'"'));assert(el.executionEventHeading.textContent.startsWith('Tick '+s.tick+' · '));
    assert(el.verification.innerHTML.includes('Oracle expected:'));assert(el.graphAll&&el.graphA&&el.graphB&&el.graphC);
    if(s.complete&&!s.quiescent)assert(!el.step.disabled,'Late retries remain demonstrable');
   }
@@ -264,7 +265,7 @@ test('Timeline UI: marker click/keyboard, Step, Back, slider, Play and Reset sha
  const h=harness(),{elements:el,click,state}=h;el.scenario.value='branch';el.schedule.value='duplicates';click('reset');
  while(!state().quiescent)click('step');const recorded=h.sandbox.window.CursorLabUI.getRecordedCount();
  const choose=(tick,key)=>{const target={closest:()=>({dataset:{executionStep:String(tick)}})};if(key)el.executionGraph.handlers.keydown({target,key,preventDefault(){}});else el.executionGraph.handlers.click({target});};
- choose(2);assert.equal(state().tick,2);assert.equal(h.timeline().currentTick,2);assert.equal(h.timeline().lanes.length,1);assert(el.executionEventHeading.textContent.startsWith('Step 2 · '));
+ choose(2);assert.equal(state().tick,2);assert.equal(h.timeline().currentTick,2);assert.equal(h.timeline().lanes.length,1);assert(el.executionEventHeading.textContent.startsWith('Tick 2 · '));
  assert.equal(h.sandbox.window.CursorLabUI.getRecordedCount(),recorded,'Timeline navigation does not run a second simulation');
  choose(3);assert.equal(state().tick,2,'Forged future marker cannot reveal a future recorded event');
  click('step');assert.equal(state().tick,3);assert.equal(h.timeline().currentTick,3);click('back');assert.equal(h.timeline().currentTick,2);
@@ -331,7 +332,7 @@ test('Domain UI: all fixtures render selected response and timeline without futu
 });
 module.exports={harness,E,plain,html};
 console.log('\n'+passed+' test groups passed. '+runs+' completed protocol runs, '+transitions+' transitions in the oracle-checked run harness.');
-console.log('Coverage: 30 fixed graph/schedule cases; 500 seeded delivery/retry cases; 100 seeded generated graph cases; targeted adversarial/regression/UI cases.');
+console.log('Event-kernel coverage: 30 fixed graph/schedule cases; 500 seeded delivery/retry cases; 100 seeded generated graph cases; targeted adversarial/regression/UI cases.');
 console.log('Timeline coverage: transfers versus forks, ACK count joins, independent converging walks, retry/emission markers, event-time context, no future leakage, shared navigation/playback, and preserved panels.');
 console.log('Selected response coverage: exact WASM-verified shape/order, partial receipts, duplicate paths, safe literals, response-change cues, domain projections and scenario invalidation.');
 console.log('Every step checks invariants. At the first coordinator-local completion, exact paths and distinct output must already match the independent DFS oracle.');

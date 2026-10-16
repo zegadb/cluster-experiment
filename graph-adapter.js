@@ -1,7 +1,7 @@
 /* Canonical fixture -> four independent instances of the reused Zega canvas. */
 (function(root){
 'use strict';
-const E=CursorLab;
+const E=typeof CursorTicks!=='undefined'?CursorTicks:CursorLab;
 function dataset(data,server){
  const ids=new Map(data.nodes.map((n,i)=>[n.id,i+1]));
  const owns=new Set(data.nodes.filter(n=>!server||n.owner===server).map(n=>n.id));
@@ -21,7 +21,7 @@ function render(s,selected){
   for(const id of ['graphAll','graphA','graphB','graphC']){const el=$(id);root.CursorZegaGraph.stopSim(el);el._graph=null;}
  }
  const active=new Set(Object.values(s.cursors).filter(c=>!['done','forwarded'].includes(c.pc)).map(c=>c.path.at(-1)));
- if(s.event.node)active.add(s.event.node);
+ for(const event of s.events||[s.event]){if(event.node)active.add(event.node);for(const id of event.edge||[])active.add(id);}
  const chosen=s.cursors[selected];if(chosen)for(const id of chosen.path)active.add(id);
  for(const id of s.event.edge||[])active.add(id);
  // Empty active set means all visible, rather than a fabricated execution highlight.
