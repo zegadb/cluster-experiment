@@ -63,3 +63,12 @@
 /* Keep the response itself visible before optional protocol explanations. */
 #userResponsePanel .stats{flex:none;min-height:32px;margin:5px 0}#userResponsePanel .stat strong{display:inline-block;font-size:18px;margin-right:5px}#userResponsePanel .stat span{font-size:10px}
 #userResponsePanel .received-json-label{flex:none;line-height:1.4}#userResponsePanel .response-reference{flex:none;max-height:42%;overflow:auto}#userResponsePanel .response-flow{flex-wrap:nowrap}#userResponsePanel .response-flow strong{min-width:0;overflow-wrap:anywhere;font-size:10px}
+
+@media(min-width:1151px){
+ #querySection{display:grid;grid-template-columns:140px minmax(0,1fr);align-items:start}#querySection .card-head{display:block;padding:12px}#querySection .card-head .small{display:block;margin-top:5px;font-size:10px;line-height:1.5}#querySection .query-banner{margin:10px 12px 10px 0}
+ .main-grid{--overview-height:clamp(380px,35vh,480px);--response-row-height:clamp(240px,28vh,480px)}
+ .graph-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 27px;grid-template-areas:"tabs tabs" "views views" "inspection legend"}
+ .graph-tabs{grid-area:tabs}.graph-views{grid-area:views}.graph-inspection{grid-area:inspection;min-width:0;white-space:nowrap;max-height:27px;min-height:27px}.graph-note{grid-area:legend;min-width:0;flex-wrap:nowrap;white-space:nowrap;overflow:auto;max-height:27px;border-top:1px solid var(--line);padding-top:5px}.graph-note .legend{flex:none}
+ .zega-graph .overview{max-height:22px;flex-wrap:nowrap;overflow:auto}.zega-graph .overview>*{flex:none}
+}
+@media(min-width:1151px){.execution-legend{flex-wrap:nowrap;white-space:nowrap;overflow:auto;min-height:27px;max-height:27px;flex:none}.execution-legend>*{flex:none}}

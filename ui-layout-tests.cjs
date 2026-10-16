@@ -36,6 +36,7 @@ assert(css.includes('grid-template-areas:"query query" "graph coordinator" "time
 assert(css.includes('grid-template-columns:minmax(0,3fr) minmax(280px,1fr)'));
 for(const selector of ['.graph-panel{grid-area:graph;height:var(--overview-height)}','#coordinatorServer{grid-area:coordinator;height:var(--overview-height)}','#executionPanel{grid-area:timeline;height:var(--response-row-height)}','#userResponsePanel{grid-area:result;height:var(--response-row-height)}'])assert(css.includes(selector),selector);
 assert(css.includes('.graph-views>div{height:100%;display:flex;flex-direction:column}'));assert(css.includes('.zega-graph .graph-wrap svg{height:100%}'));
+assert(css.includes('grid-template-areas:"tabs tabs" "views views" "inspection legend"'));assert(css.includes('--overview-height:clamp(380px,35vh,480px)'));
 assert(css.includes('@media(max-width:700px)'));assert(css.includes('.process-row{grid-template-columns:minmax(0,1fr)}'));
 console.log('PASS Main overview · strict balanced DOM; query spans page; A/B/C next to coordinator; timeline next to JSON; aligned bounded row heights, measured canvases and narrow-screen stacking.');
 assert(html.includes('id="currentEventPanel" tabindex="0"'));assert(css.includes('#currentEventPanel{height:260px;min-height:260px;max-height:260px;overflow:auto;scrollbar-gutter:stable;'));
