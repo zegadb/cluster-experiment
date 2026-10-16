@@ -72,3 +72,5 @@
  .zega-graph .overview{max-height:22px;flex-wrap:nowrap;overflow:auto}.zega-graph .overview>*{flex:none}
 }
 @media(min-width:1151px){.execution-legend{flex-wrap:nowrap;white-space:nowrap;overflow:auto;min-height:27px;max-height:27px;flex:none}.execution-legend>*{flex:none}}
+/* Horizontal strips remain scrollable without covering their single text line. */
+@media(min-width:1151px){.zega-graph .overview,.graph-inspection,.graph-note,.execution-legend{scrollbar-width:none}.zega-graph .overview::-webkit-scrollbar,.graph-inspection::-webkit-scrollbar,.graph-note::-webkit-scrollbar,.execution-legend::-webkit-scrollbar{display:none}.graph-inspection:focus-visible,.graph-note:focus-visible,.execution-legend:focus-visible{outline:2px solid #548465;outline-offset:-2px}}
