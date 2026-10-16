@@ -34,7 +34,7 @@ assert.equal(id('executionDetailPanel').tag,'details');assert.equal(id('executio
 assert.equal(id('currentEventPanel').parent.attrs.trim(),'class="process-row"');
 assert(css.includes('grid-template-areas:"query query" "graph coordinator" "timeline result"'));
 assert(css.includes('grid-template-columns:minmax(0,3fr) minmax(280px,1fr)'));
-for(const selector of ['.graph-panel{grid-area:graph;height:var(--overview-height)}','#coordinatorServer{grid-area:coordinator;height:var(--overview-height)}','#executionPanel{grid-area:timeline;height:var(--timeline-panel-height)}','#userResponsePanel{grid-area:result;height:var(--timeline-panel-height)}'])assert(css.includes(selector),selector);
+for(const selector of ['.graph-panel{grid-area:graph;height:var(--overview-height)}','#coordinatorServer{grid-area:coordinator;height:var(--overview-height)}','#executionPanel{grid-area:timeline;height:var(--response-row-height)}','#userResponsePanel{grid-area:result;height:var(--response-row-height)}'])assert(css.includes(selector),selector);
 assert(css.includes('.graph-views>div{height:100%;display:flex;flex-direction:column}'));assert(css.includes('.zega-graph .graph-wrap svg{height:100%}'));
 assert(css.includes('grid-template-areas:"tabs tabs" "views views" "inspection legend"'));assert(css.includes('--overview-height:clamp(380px,35vh,480px)'));
 assert(css.includes('@media(max-width:700px)'));assert(css.includes('.process-row{grid-template-columns:minmax(0,1fr)}'));
@@ -45,43 +45,13 @@ assert(css.includes('#userResponsePanel .response-flow{flex:none;border-width:2p
 for(let i=0;i<17;i++){h.click('step');assert(!el.fatal.textContent);}
 const marker={dataset:{executionStep:'8'},closest(){return this;}};el.executionGraph.handlers.click({target:marker});assert.equal(h.state().tick,8);assert.equal(el.executionDetailPanel.open,true);
 console.log('PASS Playback and inspection · fixed scrollable tick panel, reserved border widths, all 17 tick transitions and event selection opening the compact detail disclosure.');
-const budget=h.sandbox.window.CursorLabUI.timelineHeightBudget;
-for(const rowHeight of [70,70.25,87.5])for(const axisHeight of [32,40])for(const scrollbarHeight of [0,15,17]){
- const b=budget({rowHeight,axisHeight,chromeHeight:143.75,scrollbarHeight,layoutEdges:1.5,panelEdges:1.5});
- const inner=b.viewportHeight-scrollbarHeight-1.5;
- assert(inner>=axisHeight+21*rowHeight);assert(inner<axisHeight+22*rowHeight);
- assert(b.panelHeight>=b.viewportHeight+143.75+1.5);assert.equal(b.capacity,20);
-}
-for(const cursorCount of [20,21]){
- const nodes=Array.from({length:cursorCount},(_,i)=>({id:'p'+i,name:'Person '+i,owner:['A','B','C'][i%3]}));
- const data={name:'Layout capacity fixture',start:'p0',maxHops:1,nodes,edges:nodes.slice(1).map(n=>['p0',n.id])};
- const lab=harness(data);let guard=0;while(lab.timeline().lanes.length<cursorCount&&guard++<15)lab.click('step');
- assert.equal(lab.timeline().lanes.length,cursorCount);assert(!lab.elements.fatal.textContent);
- const svgHeight=Number(lab.elements.executionGraph.innerHTML.match(/<svg[^>]* height="([\d.]+)"/)[1]);
- const capacity=budget();assert.equal(svgHeight,32+(cursorCount+1)*70);
- assert.equal(svgHeight<=capacity.viewportHeight,cursorCount===20);
-}
-const measured=harness(),m=measured.elements,part=(height,computed={})=>({getBoundingClientRect:()=>({height}),computed});
-let measuredRow=70,measuredAxis=32;
-m.executionLanes.firstElementChild={getBoundingClientRect:()=>({height:measuredRow})};
-m.executionLanes.computed={get paddingTop(){return measuredAxis+'px';}};
-m.executionScroll.offsetHeight=1517;m.executionScroll.clientHeight=1502;
-m.executionLayout.computed={borderTopWidth:'1px',borderBottomWidth:'1px'};
-m.executionPanel.computed={borderTopWidth:'1px',borderBottomWidth:'1px'};
-const header=part(32),caption=part(20),legend=part(27),detail=part(33);
-m.executionPanel.children=[header,caption,legend,m.executionLayout,detail];
-measured.sandbox.getComputedStyle=element=>element.computed||{};
-measured.sandbox.window.listeners.resize();
-assert.equal(measured.styles['--timeline-viewport-height'],'1519px');assert.equal(measured.styles['--timeline-panel-height'],'1633px');
-legend.getBoundingClientRect=()=>({height:80});measured.sandbox.window.listeners.resize();
-assert.equal(measured.styles['--timeline-viewport-height'],'1519px');assert.equal(measured.styles['--timeline-panel-height'],'1686px');
-detail.getBoundingClientRect=()=>({height:300});m.executionDetailPanel.handlers.toggle();
-assert.equal(measured.styles['--timeline-viewport-height'],'1519px');assert.equal(measured.styles['--timeline-panel-height'],'1953px');
-measuredRow=87.5;measuredAxis=40;measured.sandbox.window.listeners.resize();
-assert.equal(measured.styles['--timeline-viewport-height'],'1895px');assert.equal(measured.styles['--timeline-panel-height'],'2329px');
-console.log('PASS Measured row sizing · actual lane/axis, horizontal scrollbar and borders; wrapped legend, expanded details and zoomed pitch grow both panels without reducing 20-lane capacity.');
-assert(!css.includes('--response-row-height:'));assert(!/#executionPanel\{height:4[24]0px\}/.test(css));
-assert(css.includes('#executionPanel,#userResponsePanel{height:var(--timeline-panel-height);min-height:var(--timeline-panel-height);max-height:none}'));
-assert(css.includes('#executionPanel .execution-layout{flex:none;height:var(--timeline-viewport-height);min-height:var(--timeline-viewport-height);max-height:none}'));
-console.log('PASS Timeline capacity · 20 real cursor lanes fit, 21 overflow; 18 fractional-pitch/axis/scrollbar combinations; measured shared JSON height and no viewport cap.');
+// Check selector ownership and the final declared area, not just an earlier matching string.
+const rules=[...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(m=>({selector:m[1].trim(),body:m[2]}));
+const areas=selector=>rules.filter(r=>r.selector.split(',').map(x=>x.trim()).includes(selector)).flatMap(r=>[...r.body.matchAll(/grid-template-areas:([^;}]+)/g)].map(m=>m[1].trim()));
+assert.equal(areas('.main-grid').at(-1),'"query query" "graph coordinator" "timeline result"');
+assert.equal(areas('.graph-panel').at(-1),'"tabs tabs" "views views" "inspection legend"');
+assert(!fs.readFileSync(__dirname+'/ui.js','utf8').includes('refreshTimelineHeight'));
+assert(!css.includes('--timeline-panel-height'));assert(!css.includes('--timeline-viewport-height'));
+assert(css.endsWith('#executionPanel,#userResponsePanel{height:calc(32px + 21 * 70px + 160px)}\n@media(max-width:1150px){#executionPanel,#userResponsePanel{height:calc(32px + 21 * 70px + 320px)}}\n'));
+console.log('PASS Scoped height repair · outer page and internal graph grids retain their own final areas; only the two lower cards get taller; baseline renderer and observers restored.');
 console.log('Geometry/DOM/CSS checks; real-browser screenshot verification is reported separately.');
