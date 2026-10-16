@@ -137,6 +137,7 @@
     const tick=Number(marker.dataset.executionStep);if(!Number.isInteger(tick)||tick<0||tick>state().tick)return;
     const index=snapshots.findIndex(s=>s.tick===tick);if(index<0)return;
     stop();position=index;selectedEventId=marker.dataset.executionEvent||null;selected=CursorTimeline.project(snapshots,tick,selectedEventId).selected.cursor||'c1';render();
+    $('executionDetailPanel').open=true;
     if(typeof $('executionEventHeading').focus==='function')$('executionEventHeading').focus({preventScroll:true});
   }
   function renderUserResponse(s){
@@ -148,25 +149,23 @@
     $('userResponseState').textContent=s.complete?'Final ZQL response':'Partial ZQL response · assembled from received results';
     $('userResponsePanel').classList.toggle('response-updated',change.changed);
     $('responseConnector').classList.toggle('is-active',change.changed);
-    $('responseUpdateLabel').textContent=change.changed?'Tick '+s.tick+': return data updated':'No return-data change';
+    $('responseUpdateLabel').textContent=change.changed?'Tick '+s.tick+': JSON updated':'No return-data change';
     $('responseChangeDetail').textContent=change.changed?(change.added.length?'+ Added '+change.added.map(entry=>JSON.stringify(entry)).join(', '):'↕ Existing response entries changed or reordered.'):
       s.tick===0?'Awaiting result receipts.':s.event.type==='duplicate'?'Protocol retry ignored; user response unchanged.':s.event.type==='result'?'A receipt arrived without changing the selected response; user response unchanged.':s.complete?'Query complete; return data unchanged on this step.':'Protocol step only; no user-response update.';
   }
+  // Only the empty row gap is crossed. Both cards share the coordinator column.
   function connectorGeometry(grid,source,outbox,target,flow){
-    const values=[grid.left,grid.top,grid.width,grid.height,source.right,source.top,source.height,outbox.top,outbox.height,target.left,flow.top,flow.height];
-    if(values.some(value=>!Number.isFinite(value))||source.right+12>=target.left||grid.width<=0||grid.height<=0)return null;
-    const x1=source.right-grid.left+2,x2=target.left-grid.left-3;
-    const y1=Math.max(source.top+8,Math.min(source.top+source.height-8,outbox.top+outbox.height/2))-grid.top;
-    const y2=flow.top+flow.height/2-grid.top,lane=(x1+x2)/2;
-    const delta=y2-y1,direction=Math.sign(delta),radius=Math.min(6,(x2-x1)/4,Math.abs(delta)/2);
-    const path=Math.abs(delta)<1?'M '+x1+' '+y1+' H '+x2:
-      'M '+x1+' '+y1+' H '+(lane-radius)+' Q '+lane+' '+y1+' '+lane+' '+(y1+direction*radius)+' V '+(y2-direction*radius)+' Q '+lane+' '+y2+' '+(lane+radius)+' '+y2+' H '+x2;
-    return {path,x1,y1,x2,y2,lane,width:grid.width,height:grid.height};
+    const values=[grid.left,grid.top,grid.width,grid.height,source.left,source.right,source.bottom,target.left,target.right,target.top,outbox.left,outbox.right,flow.left,flow.right];
+    if(values.some(value=>!Number.isFinite(value))||source.bottom+8>target.top||grid.width<=0||grid.height<=0)return null;
+    const left=Math.max(source.left,target.left,outbox.left,flow.left)+8,right=Math.min(source.right,target.right,outbox.right,flow.right)-8;
+    if(right<=left)return null;
+    const x=(left+right)/2-grid.left,y1=source.bottom-grid.top+1,y2=target.top-grid.top-3;
+    return {path:'M '+x+' '+y1+' V '+y2,x1:x,y1,x2:x,y2,width:grid.width,height:grid.height};
   }
   function refreshResponseConnector(){
-    const route=connectorGeometry($('mainGrid').getBoundingClientRect(),$('coordinatorServer').getBoundingClientRect(),$('coordResultLabel').getBoundingClientRect(),$('userResponsePanel').getBoundingClientRect(),$('responseFlow').getBoundingClientRect());
+    const route=connectorGeometry($('mainGrid').getBoundingClientRect(),$('coordinatorServer').getBoundingClientRect(),$('coordOutbox').getBoundingClientRect(),$('userResponsePanel').getBoundingClientRect(),$('responseFlow').getBoundingClientRect());
     if(!route){$('responseConnector').innerHTML='';return;}
-    $('responseConnector').innerHTML='<svg viewBox="0 0 '+route.width+' '+route.height+'" preserveAspectRatio="none"><defs><marker id="return-data-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 7 7" refX="6" refY="3.5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L5.5 3.5 L1 6" fill="none" stroke="#587c56" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><circle cx="'+route.x1+'" cy="'+route.y1+'" r="2" fill="#587c56"/><path class="response-wire" data-response-route="gutter-to-update-banner" d="'+route.path+'" fill="none" marker-end="url(#return-data-arrow)"/></svg>';
+    $('responseConnector').innerHTML='<svg viewBox="0 0 '+route.width+' '+route.height+'" preserveAspectRatio="none"><defs><marker id="return-data-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 7 7" refX="6" refY="3.5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L5.5 3.5 L1 6" fill="none" stroke="#587c56" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><circle cx="'+route.x1+'" cy="'+route.y1+'" r="2" fill="#587c56"/><path class="response-wire" data-response-route="coordinator-to-json-row-gap" d="'+route.path+'" fill="none" marker-end="url(#return-data-arrow)"/></svg>';
   }
   function render() {
     const s=state(),e=s.event,coord=E.coordinator(s),comparison=E.comparison(s);
@@ -245,7 +244,7 @@
   });
   // Read-only diagnostics for local verification; the renderer never mutates engine state.
   window.CursorLabUI = Object.freeze({ getState: () => JSON.parse(JSON.stringify(state())), getPosition: () => position, getRecordedCount: () => snapshots.length, coordinatorUserResponse, coordinatorResponseJSON, responseChange, connectorGeometry, getReference:()=>JSON.parse(JSON.stringify(reference)),runReference, getExecutionTimeline: () => CursorTimeline.project(snapshots,state().tick,selectedEventId), queryText });
-  if(typeof ResizeObserver==='function'){const connectorObserver=new ResizeObserver(refreshResponseConnector);for(const id of ['mainGrid','coordinatorServer','coordResultLabel','userResponsePanel','responseFlow'])connectorObserver.observe($(id));}
+  if(typeof ResizeObserver==='function'){const connectorObserver=new ResizeObserver(refreshResponseConnector);for(const id of ['mainGrid','coordinatorServer','coordOutbox','userResponsePanel','responseFlow'])connectorObserver.observe($(id));}
   reset();
   // Reserve the actual floating-bar height when zoom or wrapping changes it.
   // CSS provides a conservative fallback before the first observation.
